@@ -29,7 +29,8 @@ class Anime(object):
         else:
             anime = random.choice(data)
             title = anime['canonicalTitle']
-            self.anime = anime_search(title)
+            genres = ", ".join(str(x) for x in anime['genres'])
+            self.anime = anime_search(title, genres=genres)
 
 
     def send_anime(self):
@@ -55,7 +56,7 @@ def clean_title(anime_title):
     return anime_lower
 
 
-def anime_search(title):
+def anime_search(title, genres=None):
 
     anime_lower = clean_title(title)
     api = requests.get('https://myanimelist.net/api/anime/search.xml?q=' + anime_lower, auth=(MAL_USER, MAL_PASS))
@@ -69,19 +70,26 @@ def anime_search(title):
         if type(anime) is list:
             anime = anime[0]
 
-        url = 'https://myanimelist.net/anime/' + anime['id']
-        req = requests.get(url)
-        html = BeautifulSoup(req.text, "html.parser")
+        anime['genres'] = ''
 
-        genres_tags = html.findAll('a', attrs={'href': re.compile('/anime/genre/*')})
-        genres = ''
-        for genre in genres_tags:
-            genres += genre.getText() + ", "
+        if not genres:
+
+            url = 'https://myanimelist.net/anime/' + anime['id']
+            req = requests.get(url)
+            html = BeautifulSoup(req.text, "html.parser")
+
+            genres_tags = html.findAll('a', attrs={'href': re.compile('/anime/genre/*')})
+            genres_out = ''
+            for genre in genres_tags:
+                genres_out += genre.getText() + ", "
+            anime['genres'] = genres_out[:-2]
+        else:
+            anime['genres'] = genres
 
 
         anime_dict = {
             'title' : anime['title'],
-            'genres': genres[:-2],
+            'genres': anime['genres'],
             'eps' : str(anime['episodes']),
             'image_url' : get_image(anime['image'], anime_lower)
         }
