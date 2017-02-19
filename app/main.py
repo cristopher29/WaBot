@@ -6,6 +6,7 @@ from app.utils import helper
 from app.yesno.yesno import YesNo
 from app.anime.anime import Anime
 from app.quote.quote import Quote
+from app.passwords import CLEVER_API_KEY
 
 import wolframalpha
 from app.clever.clever import Cleverbot
@@ -30,10 +31,13 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         yesno.send_yesno()
 
     elif command == "anime":
-        if predicate == 'season':
-            anime = Anime(instance, conversation, True)
+        if predicate:
+            if predicate == 'season':
+                anime = Anime(instance, conversation, param='season')
+            else:
+                anime = Anime(instance, conversation, param=predicate)
         else:
-            anime = Anime(instance, conversation, False)
+            anime = Anime(instance, conversation)
 
         anime.send_anime()
 
@@ -63,6 +67,6 @@ def wolfram_answer(message, who=""):
 
 
 def cleverbot_answer(message):
-    cb = Cleverbot('')
+    cb = Cleverbot(CLEVER_API_KEY)
     answer = cb.ask(message)
     return answer

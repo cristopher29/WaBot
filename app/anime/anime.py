@@ -4,60 +4,42 @@ from app.bot import bot
 import json, random, requests, xmltodict, re
 from collections import OrderedDict
 from bs4 import BeautifulSoup
+from app.passwords import MAL_PASS,MAL_USER
 
 with open('app/assets/json/anime.json') as data_file:
     data = json.load(data_file)
 
 class Anime(object):
-    def __init__(self, instance, conversation,season):
+    def __init__(self, instance, conversation,param=None):
         self.instance = instance
         self.conversation = conversation
-        self.title = ""
-        self.genre = ""
-        self.epis = ""
-        self.image_path = ""
-        self.no_anime = False
-        self.build(season)
+        self.anime = None
+        self.build(param)
 
-    def build(self,season):
-        if season:
-            anime = anime_season()
-            anime_lower = anime['title'].lower().replace(" ", "_")
-            anime_lower = re.sub(r"/!^;.:¿¡", "", anime_lower)
-            self.title = anime['title']
-            self.genre = anime['genres']
-            self.epis = anime['eps']
-            self.image_path = get_image(anime['image_url'], anime_lower)
+    def build(self,param):
+        if param:
+            if param == 'season':
+                self.anime = anime_season()
+                anime_lower = clean_title(self.anime['title'])
+                image_path = get_image(self.anime['image_url'], anime_lower)
+                self.anime['image_url'] = image_path
+            else:
+                self.anime = anime_search(param)
 
         else:
             anime = random.choice(data)
             genres = ", ".join(str(x) for x in anime['genres'])
-            anime_lower = anime['canonicalTitle'].lower().replace(" ", "_")
-            anime_lower = re.sub(r"/!^;.:¿¡", "", anime_lower)
-            api = requests.get('https://myanimelist.net/api/anime/search.xml?q=' + anime_lower, auth=('', ''))
-            if api.status_code != 204:
+            title = anime['canonicalTitle']
+            self.anime = anime_search(title)
+            self.anime['genres'] = genres
 
-                xml_dict = xmltodict.parse(api.content)
-                input_dict = OrderedDict(xml_dict)
-                output_dict = json.loads(json.dumps(input_dict))
-                anime = output_dict['anime']['entry']
-
-                if type(anime) is list:
-                    anime = anime[0]
-
-                self.image_path = get_image(anime['image'], anime_lower)
-                self.title = anime['title']
-                self.epis = str(anime['episodes'])
-                self.genre = genres
-            else:
-                self.no_anime = True
 
     def send_anime(self):
-        if self.no_anime:
+        if not self.anime:
             bot.send_message(self.instance,"*No he encontrado nada* :(" , self.conversation)
         else:
-            text = u"*"+self.title+"* \n*Episodios*: " + self.epis + "\n*Géneros*: " + self.genre
-            bot.send_image(self.instance, self.conversation, self.image_path, text)
+            text = u"*"+self.anime['title']+"* \n*Episodios*: " + self.anime['eps'] + "\n*Géneros*: " + self.anime['genres']
+            bot.send_image(self.instance, self.conversation, self.anime['image_url'], text)
 
         
 
@@ -68,6 +50,39 @@ def get_image(url, caption):
     file.write(requests.get(url).content)
     file.close()
     return path
+
+def clean_title(anime_title):
+    anime_lower = anime_title.lower().replace(" ", "_")
+    anime_lower = re.sub(r"/!^;.:¿¡", "", anime_lower)
+    return anime_lower
+
+
+def anime_search(title):
+
+    anime_lower = clean_title(title)
+    api = requests.get('https://myanimelist.net/api/anime/search.xml?q=' + anime_lower, auth=(MAL_USER, MAL_PASS))
+
+    if api.status_code != 204:
+        xml_dict = xmltodict.parse(api.content)
+        input_dict = OrderedDict(xml_dict)
+        output_dict = json.loads(json.dumps(input_dict))
+        anime = output_dict['anime']['entry']
+
+        if type(anime) is list:
+            anime = anime[0]
+
+        anime_dict = {
+            'title' : anime['title'],
+            'genres': '',
+            'eps' : str(anime['episodes']),
+            'image_url' : get_image(anime['image'], anime_lower)
+        }
+
+        return anime_dict
+
+    else:
+        return False
+
 
 def anime_season():
     url = 'https://myanimelist.net/anime/season'
