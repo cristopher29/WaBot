@@ -8,7 +8,7 @@ from app.anime.anime import Anime
 from app.quote.quote import Quote
 
 import wolframalpha
-from cleverbot import Cleverbot
+from app.clever.clever import Cleverbot
 
 ####################################################################################################################
 
@@ -22,7 +22,7 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         bot.send_message(instance, answer, conversation)
 
     elif command == "ayuda":
-        answer = "*Lista de comandos* \n !hola \n !anime \n !quote \n !siono \n !ayuda"
+        answer = "*Lista de comandos* \n!hola \n!anime \n!anime season \n!quote \n!siono \n!ayuda"
         bot.send_message(instance, answer, conversation)
 
     elif command == "siono":
@@ -30,7 +30,13 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         yesno.send_yesno()
 
     elif command == "anime":
-        anime = Anime(instance, conversation)
+	if predicate == 'season':
+        	anime = Anime(instance, conversation, True)
+	else:
+		anime = Anime(instance, conversation, False)
+	#if predicate == 'season':
+	#	anime.send_anime_season()
+	#else:
         anime.send_anime()
 
     elif command == "quote":
@@ -59,6 +65,6 @@ def wolfram_answer(message, who=""):
 
 
 def cleverbot_answer(message):
-    cb = Cleverbot()
+    cb = Cleverbot('')
     answer = cb.ask(message)
     return answer
