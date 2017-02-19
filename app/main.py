@@ -30,13 +30,11 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         yesno.send_yesno()
 
     elif command == "anime":
-	if predicate == 'season':
-        	anime = Anime(instance, conversation, True)
-	else:
-		anime = Anime(instance, conversation, False)
-	#if predicate == 'season':
-	#	anime.send_anime_season()
-	#else:
+        if predicate == 'season':
+            anime = Anime(instance, conversation, True)
+        else:
+            anime = Anime(instance, conversation, False)
+
         anime.send_anime()
 
     elif command == "quote":
