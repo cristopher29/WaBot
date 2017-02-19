@@ -28,10 +28,8 @@ class Anime(object):
 
         else:
             anime = random.choice(data)
-            genres = ", ".join(str(x) for x in anime['genres'])
             title = anime['canonicalTitle']
             self.anime = anime_search(title)
-            self.anime['genres'] = genres
 
 
     def send_anime(self):
@@ -71,9 +69,19 @@ def anime_search(title):
         if type(anime) is list:
             anime = anime[0]
 
+        url = 'https://myanimelist.net/anime/' + anime['id']
+        req = requests.get(url)
+        html = BeautifulSoup(req.text, "html.parser")
+
+        genres_tags = html.findAll('a', attrs={'href': re.compile('/anime/genre/*')})
+        genres = ''
+        for genre in genres_tags:
+            genres += genre.getText() + ", "
+
+
         anime_dict = {
             'title' : anime['title'],
-            'genres': '',
+            'genres': genres[:-2],
             'eps' : str(anime['episodes']),
             'image_url' : get_image(anime['image'], anime_lower)
         }
