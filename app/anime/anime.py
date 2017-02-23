@@ -61,7 +61,7 @@ def anime_search(title, genres=None):
     anime_lower = clean_title(title)
     api = requests.get('https://myanimelist.net/api/anime/search.xml?q=' + anime_lower, auth=(MAL_USER, MAL_PASS))
 
-    if api.status_code != 204:
+    if api.status_code == 200:
         xml_dict = xmltodict.parse(api.content)
         input_dict = OrderedDict(xml_dict)
         output_dict = json.loads(json.dumps(input_dict))
@@ -110,7 +110,7 @@ def anime_season():
         'class': 'seasonal-anime-list js-seasonal-anime-list js-seasonal-anime-list-key-1 clearfix'}).find_all('div', {
         'class': 'seasonal-anime js-seasonal-anime'})
 
-    for i, anime in enumerate(animes_temp):
+    for anime in animes_temp:
         titulo = anime.find('p', {'class': 'title-text'}).find('a').getText()
         eps = anime.find('div', {'class': 'eps'}).find('span').getText()
         image_temp = anime.find('div', {'class': 'image'})['style']
