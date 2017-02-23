@@ -5,7 +5,9 @@ Otaku WhatsApp Bot
 ### Lista de comandos:
 
 + **`!hola`**: Saluda al usuario
-+ **`!anime <season> o <nombre>`**: Anime (myanimelist api)
++ **`!anime`**: Anime aleatorio
++ **`!anime season`**: Anime de temporada
++ **`!anime <nombre>`**: Búsqueda por nombre
 + **`!quote`**: Cita/Frase aleatoria (forismatic api)
 + **`!siono`**: Responde Sí o No
 + **`!ayuda`**: Lista de comandos
