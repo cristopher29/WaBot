@@ -7,15 +7,13 @@ from app.yesno.yesno import YesNo
 from app.anime.anime import Anime
 from app.quote.quote import Quote
 from app.passwords import CLEVER_API_KEY
-
-import wolframalpha
 from app.clever.clever import Cleverbot
 
 ####################################################################################################################
 
 
 def handle_message(instance, command, predicate, message_entity, who, conversation):
-    # Nigga who send the message
+
     who_name = helper.sender_name(message_entity)
 
     if command == "hola":
@@ -47,23 +45,8 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         
     else:
         #return
-        # No command for this so use IA
         answer = cleverbot_answer(command + " " + predicate)
-        #answer = wolfram_answer(command + " " + predicate, who_name)
         bot.send_message(instance, answer, conversation)
-        
-    
-def wolfram_answer(message, who=""):
-    app_id = "WL543X-974Q523T8P"
-    client = wolframalpha.Client(app_id)
-    try:
-        res = client.query(message)
-        if hasattr(res, 'pods'):
-            return next(res.results).text
-        else:
-            return cleverbot_answer(message)
-    except:
-        return "*?*"
 
 
 def cleverbot_answer(message):
