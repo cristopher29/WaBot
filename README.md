@@ -1,13 +1,15 @@
 # WaBot
 
+Otaku WhatsApp Bot
+
 ### Lista de comandos:
 
 + **`!hola`**: Saluda al usuario
-+ **`!anime`**: Anime aleatorio (myanimelist api)
++ **`!anime <season> o <nombre>`**: Anime (myanimelist api)
 + **`!quote`**: Cita/Frase aleatoria (forismatic api)
 + **`!siono`**: Responde Sí o No
 + **`!ayuda`**: Lista de comandos
-+ **`!----`**: cleverbot (https://github.com/mrgigabyte/cleverbot.py)
++ **`!----`**: cleverbot
 
 ### Creditos
 
