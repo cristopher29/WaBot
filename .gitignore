@@ -1,6 +1,5 @@
 __pycache__
 *.pyc
-run.py
 .idea
 app/build/
 app/dist/
