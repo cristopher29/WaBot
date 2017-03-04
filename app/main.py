@@ -1,6 +1,7 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import string
 
+import string
 from app.bot import bot
 from app.utils import helper
 from app.yesno.yesno import YesNo
@@ -23,7 +24,7 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         bot.send_message(instance, answer, conversation)
 
     elif command == "ayuda":
-        answer = "*Lista de comandos* \n!hola \n!anime <búsqueda> \n!anime season \n!youtube <búsqueda> \n!quote \n!siono \n!ayuda".encode('utf-8')
+        answer = "*Lista de comandos* \n!hola \n!anime <búsqueda> \n!anime season \n!youtube <búsqueda> \n!quote \n!siono \n!ayuda".decode('utf-8')
         bot.send_message(instance, answer, conversation)
 
     elif command == "siono":
