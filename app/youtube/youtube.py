@@ -16,7 +16,7 @@ class Youtube(object):
         self.youtube = search_yt(query)
 
     def send_youtube(self):
-        text = u"*" + self.youtube['title'] + "* \n*URL*: " + self.youtube['url']
+        text = u"*" + self.youtube['title'] + "* \n*Enlace*: " + self.youtube['url'] + "\n*Subido por*: " + self.youtube['autor']
         bot.send_image(self.instance, self.conversation, self.youtube['image_url'], text)
 
 
@@ -43,6 +43,7 @@ def search_yt(string):
 
     content = el.find('div', {'class': 'yt-lockup-content'})
     title = content.find('h3').find('a')['title']
+    autor = content.find('div',{'class': 'yt-lockup-byline '}).find('a').getText()
     href = content.find('h3').find('a')['href']
     yt_url = "https://www.youtube.com" + href
 
@@ -57,7 +58,8 @@ def search_yt(string):
     output = {
         'title': title,
         'url': yt_url,
-        'image_url': get_image(thumbnail,title_lower)
+        'image_url': get_image(thumbnail,title_lower),
+        'autor': autor
     }
 
     return output
