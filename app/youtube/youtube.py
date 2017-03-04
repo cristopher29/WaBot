@@ -52,10 +52,12 @@ def search_yt(string):
         id = href[9:]
         thumbnail = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg'
 
+    title_lower = title.replace(' ','_')
+
     output = {
         'title': title,
         'url': yt_url,
-        'image_url': get_image(thumbnail,title.replace('+','_'))
+        'image_url': get_image(thumbnail,title_lower)
     }
 
     return output
