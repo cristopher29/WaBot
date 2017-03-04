@@ -114,7 +114,6 @@ def decode_string(message):
             message = message.decode(encoding='latin1', errors='ignore')
         return message
     except:
-        print message
         return message
 
 
