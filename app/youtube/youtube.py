@@ -17,6 +17,7 @@ class Youtube(object):
 
     def send_youtube(self):
         text = u"*" + self.youtube['title'] + "* \n*URL*: " + self.youtube['url']
+        print self.youtube['image_url']
         bot.send_image(self.instance, self.conversation, self.youtube['image_url'], text)
 
 
@@ -41,8 +42,7 @@ def search_yt(string):
     yt_url = "https://www.youtube.com" + href
 
     if "watch" not in href:
-        thumbnail = \
-        el.find('div', {'class': 'yt-lockup-thumbnail'}).find('span', {'class': 'yt-thumb-simple'}).find('img')['src']
+        thumbnail = el.find('div', {'class': 'yt-lockup-thumbnail'}).find('span', {'class': 'yt-thumb-simple'}).find('img')['src']
     else:
         id = href[9:]
         thumbnail = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg'
