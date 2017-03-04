@@ -21,6 +21,13 @@ class Youtube(object):
         bot.send_image(self.instance, self.conversation, self.youtube['image_url'], text)
 
 
+def get_image(url, caption):
+    path = "app/assets/images/" + caption + ".jpg"
+    file = open(path, 'wb')
+    file.write(requests.get(url).content)
+    file.close()
+    return path
+
 def search_yt(string):
 
     query = re.sub('[\\\\/:+*?"`<>&!-.;#~$%|]', '', string).strip().replace(' ', '+')
@@ -50,7 +57,7 @@ def search_yt(string):
     output = {
         'title': title,
         'url': yt_url,
-        'image_url': thumbnail
+        'image_url': get_image(thumbnail,title.replace('+','_'))
     }
 
     return output
