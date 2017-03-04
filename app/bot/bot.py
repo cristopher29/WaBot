@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os.path
 import logging
@@ -113,7 +114,7 @@ def decode_string(message):
             message = message.decode(encoding='latin1', errors='ignore')
         return message
     except:
-        return message
+        return message.encode('latin1')
 
 
 def send_image(self, number, path, caption=None):
