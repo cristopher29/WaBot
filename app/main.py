@@ -44,9 +44,9 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         quote.send_quote()
         
     else:
-        #return
-        answer = cleverbot_answer(command + " " + predicate)
-        bot.send_message(instance, answer, conversation)
+        return
+        #answer = cleverbot_answer(command + " " + predicate)
+        #bot.send_message(instance, answer, conversation)
 
 
 def cleverbot_answer(message):
