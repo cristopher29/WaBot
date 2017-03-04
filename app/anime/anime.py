@@ -114,7 +114,7 @@ def anime_season():
         titulo = anime.find('p', {'class': 'title-text'}).find('a').getText()
         eps = anime.find('div', {'class': 'eps'}).find('span').getText()
         image_temp = anime.find('div', {'class': 'image'}).find('img')['data-srcset']
-        image_url = re.search("(?P<url>https?://[^\s]+)", image_temp).group("url")[:-1]
+        image_url = re.search("(?P<url>https?://[^\s]+)", image_temp).group("url")
         genres_temp = anime.find('div', {'class': 'genres-inner js-genre-inner'}).find_all('span', {'class': 'genre'})
 
         genres = ''
