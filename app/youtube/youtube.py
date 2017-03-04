@@ -17,7 +17,6 @@ class Youtube(object):
 
     def send_youtube(self):
         text = u"*" + self.youtube['title'] + "* \n*URL*: " + self.youtube['url']
-        print self.youtube['image_url']
         bot.send_image(self.instance, self.conversation, self.youtube['image_url'], text)
 
 
@@ -33,7 +32,6 @@ def search_yt(string):
     query = re.sub('[\\\\/:+*?"`<>&!-.;#~$%|]', '', string).strip().replace(' ', '+')
 
     url = 'https://www.youtube.com/results?search_query=' + query
-    print url
 
     req = requests.get(url)
     html = BeautifulSoup(req.text, "html.parser")
