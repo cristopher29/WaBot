@@ -113,7 +113,7 @@ def decode_string(message):
             message = message.decode(encoding='latin1', errors='ignore')
         return message
     except:
-        return message.encode("utf-8")
+        return message
 
 
 def send_image(self, number, path, caption=None):
