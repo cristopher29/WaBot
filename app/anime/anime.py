@@ -52,7 +52,7 @@ def get_image(url, caption):
 
 def clean_title(anime_title):
     anime_lower = anime_title.lower().replace(" ", "_")
-    anime_lower = re.sub(r"/!^;.:¿¡", "", anime_lower)
+    anime_lower = re.sub('[\\\\/:+*?"`<>&!-.;#~$%|]', '', anime_lower)
     return anime_lower
 
 

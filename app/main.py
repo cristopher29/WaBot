@@ -9,6 +9,7 @@ from app.quote.quote import Quote
 from app.passwords import CLEVER_API_KEY
 from app.clever.clever import Cleverbot
 from app.quedada import quedada
+from app.youtube.youtube import Youtube
 
 ####################################################################################################################
 
@@ -43,6 +44,12 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
     elif command == "quote":
         quote = Quote(instance, conversation)
         quote.send_quote()
+
+    elif command == "youtube":
+        if predicate:
+            youtube = Youtube(instance, conversation, predicate)
+            youtube.send_youtube()
+
     elif command == "quedada":
 
         if predicate:
