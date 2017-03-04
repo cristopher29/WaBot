@@ -45,16 +45,15 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         quote.send_quote()
     elif command == "quedada":
 
-        args = [x for x in predicate.split(' ')]
-        if len(args) <= 0:
+        if len(predicate) <= 0:
             bot.send_message(instance, "Establece un lugar", conversation)
             return
-        if len(args) >= 1:
-            if args[0] == "finalizar":
+        if len(predicate) >= 1:
+            if predicate == "finalizar":
                 quedada.finish_quedada(instance, who, conversation)
                 return
-            if len(args) == 1:
-                lugar = args[0]
+            else:
+                lugar = predicate
                 basic_boll = quedada.Quedada(instance, conversation, who, lugar)
                 basic_boll.send_quedada()
     else:
