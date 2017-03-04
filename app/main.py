@@ -45,17 +45,18 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         quote.send_quote()
     elif command == "quedada":
 
-        if len(predicate) <= 0:
-            bot.send_message(instance, "Establece un lugar", conversation)
-            return
-        if len(predicate) >= 1:
+        if predicate:
             if predicate == "finalizar":
                 quedada.finish_quedada(instance, who, conversation)
                 return
             else:
                 lugar = predicate
-                basic_boll = quedada.Quedada(instance, conversation, who, lugar)
-                basic_boll.send_quedada()
+                new_quedada = quedada.Quedada(instance, conversation, who, lugar)
+                new_quedada.send_quedada()
+        else:
+            bot.send_message(instance, "Establece un lugar", conversation)
+            return
+
     else:
         return
         #answer = cleverbot_answer(command + " " + predicate)
