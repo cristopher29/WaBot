@@ -74,4 +74,4 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
 def cleverbot_answer(message):
     cb = Cleverbot(CLEVER_API_KEY)
     answer = cb.ask(message)
-    return answer
+    return answer.decode('utf-8')
