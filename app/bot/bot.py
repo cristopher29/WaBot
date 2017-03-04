@@ -114,7 +114,7 @@ def decode_string(message):
             message = message.decode(encoding='latin1', errors='ignore')
         return message
     except:
-        return message
+        return message.decode('utf-8','ignore').encode("utf-8")
 
 
 def send_image(self, number, path, caption=None):
