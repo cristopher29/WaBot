@@ -16,7 +16,7 @@ class Youtube(object):
         self.youtube = search_yt(query)
 
     def send_youtube(self):
-        text = u"*" + self.youtube['title'] + "* \n*Enlace*: " + self.youtube['url'] + "\n*Subido por*: " + self.youtube['autor']
+        text = u"*" + self.youtube['title'] + "* \n" + self.youtube['url'] + "\n*Subido por*: " + self.youtube['autor']
         bot.send_image(self.instance, self.conversation, self.youtube['image_url'], text)
 
 
