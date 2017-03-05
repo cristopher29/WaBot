@@ -10,9 +10,8 @@ from app.receiver import receiver
 
 from yowsup.layers.interface import YowInterfaceLayer, ProtocolEntityCallback
 from yowsup.layers.protocol_contacts.protocolentities import *
-
 from yowsup.layers.protocol_groups.protocolentities import *
-
+from yowsup.layers.protocol_groups.protocolentities.notification_groups_add import AddGroupsNotificationProtocolEntity
 
 allowedPersons=['34695529542-1487091202','34695529542-1417819580']
 ap = set(allowedPersons)
@@ -37,6 +36,17 @@ class BotLayer(YowInterfaceLayer):
         contact_entity = GetSyncIqProtocolEntity(contacts)
         self._sendIq(contact_entity, self.on_sync_result, self.on_sync_error)
 
+    @ProtocolEntityCallback("notification")
+    def onNotification(self, notification):
+        """
+            Reacts to any notification received
+        """
+        self.toLower(notification.ack())
+        if isinstance(notification, AddGroupsNotificationProtocolEntity):  # added new member
+            who = notification.getParticipant()
+            conver = notification.getFrom()
+            main.handle_message(self, "newmember", "", notification , who, conver)
+
     def on_sync_result(self,
                        result_sync_iq_entity,
                        original_iq_entity):
@@ -59,7 +69,6 @@ class BotLayer(YowInterfaceLayer):
     @ProtocolEntityCallback("message")
     def on_message(self, message_entity):
         if helper.is_text_message(message_entity):
-            print message_entity
             print (message_entity.getFrom(False) + " : " + message_entity.getBody().encode('utf-8'))
 
             # Set received (double v) and add to ack queue

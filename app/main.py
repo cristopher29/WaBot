@@ -25,6 +25,11 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         answer = "Hola *" + who_name + "*"
         bot.send_message(instance, answer, conversation)
 
+    elif command == "newmember":
+
+        answer = "Hola *" + who_name + "* " + "\nBienvenido!"
+        bot.send_message(instance, answer, conversation)
+
     elif command == "ayuda":
 
         answer = "*Lista de comandos* " \
