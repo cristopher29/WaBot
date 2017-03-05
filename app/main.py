@@ -31,14 +31,14 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
     elif command == "ayuda":
 
         answer = "*Lista de comandos* " \
-                 "\n!hola " \
-                 "\n!anime <búsqueda> " \
-                 "\n!anime season " \
-                 "\n!youtube <búsqueda> " \
-                 "\n!noticia <anime,games,ciencia,series,música,actualidad> " \
-                 "\n!adv " \
-                 "\n!quote " \
-                 "\n!siono " \
+                 "\n!hola 👋" \
+                 "\n!anime <búsqueda> 💮" \
+                 "\n!anime season 💮" \
+                 "\n!youtube <búsqueda> 💮" \
+                 "\n!noticia <anime,games,ciencia,series,música,actualidad> 📰" \
+                 "\n!adv 😣" \
+                 "\n!quote 📌" \
+                 "\n!siono 🤷" \
                  "\n!ayuda".decode('utf-8')
 
         bot.send_message(instance, answer, conversation)
