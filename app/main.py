@@ -19,11 +19,11 @@ from app.noticias.noticias import Noticias
 
 def handle_message(instance, command, predicate, message_entity, who, conversation):
 
-    who_name = helper.sender_name(message_entity)
+    #who_name = helper.sender_name(message_entity)
 
     if command == "hola":
-        answer = "Hola *" + who_name + "*"
-        bot.send_message(instance, answer, conversation)
+        #answer = "Hola *" + who_name + "*"
+        bot.send_message(instance, "Hola", conversation)
 
     elif command == "newmember":
 
