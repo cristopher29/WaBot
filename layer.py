@@ -42,11 +42,10 @@ class BotLayer(YowInterfaceLayer):
             Reacts to any notification received
         """
         self.toLower(notification.ack())
-        print notification
+
         if isinstance(notification, AddGroupsNotificationProtocolEntity):  # added new member
-            who = notification.getParticipant()
             conver = notification.getFrom()
-            main.handle_message(self, "newmember", "", notification , who, conver)
+            main.handle_message(self, "newmember", "", notification , "", conver)
 
     def on_sync_result(self,
                        result_sync_iq_entity,
@@ -101,7 +100,6 @@ class BotLayer(YowInterfaceLayer):
             predicate = helper.predicate(message_entity).split(' ', 1)[1]
         except IndexError:
             print("No predicate")
-
         # Log
         # helper.log_mac(message_entity)
         who = helper.get_who_send(message_entity)
