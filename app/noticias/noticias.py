@@ -81,8 +81,8 @@ def get_noticia(tipo):
             link = new.find('a',{'class':'txt_home_news'})['href']
             image_url = new.find('img', attrs={'style': 'width:337px; height:190px; border:1px solid #000;'})['src']
             out = {
-                'title': title,
-                'body': body,
+                'title': title.strip(),
+                'body': body.strip(),
                 'link': link,
                 'image_url': image_url
             }
@@ -101,8 +101,8 @@ def get_noticia(tipo):
             link = new.find('div',{'class':'widget-full-list-text'}).find('a')['href']
             image_url = new.find('img',{'class':'attachment-medium-thumb size-medium-thumb wp-post-image'})['data-lazy-src']
             out = {
-                'title': title,
-                'body': body,
+                'title': title.strip(),
+                'body': body.strip(),
                 'link': link,
                 'image_url': image_url
             }
@@ -120,8 +120,8 @@ def get_noticia(tipo):
             link = new.find('figure').find('a')['href']
             image_url = new.find('figure').find('img')['src']
             out = {
-                'title': title,
-                'body': body,
+                'title': title.strip(),
+                'body': body.strip(),
                 'link': link,
                 'image_url': url+image_url
             }
