@@ -24,4 +24,4 @@ def get_adv():
 
     advs = html.find_all('div', {'class':'box story'})
 
-    return advs[0].find('p').find('a').getText()
+    return advs[0].find('p').find('a').getText().strip()
