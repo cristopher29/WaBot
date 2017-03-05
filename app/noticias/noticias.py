@@ -20,8 +20,17 @@ class Noticias(object):
 
     def send_noticia_anime(self):
         text = u"*" + self.noticia['title'] + "*\n" + self.noticia['body'] + "\n" + self.noticia['link']
-        bot.send_image(self.instance, self.conversation, self.noticia['image_url'], text)
+        title_lower = self.noticia['title'].replace(" ", "_")
+        image_url = get_image(self.noticia['image_url'],title_lower)
+        bot.send_image(self.instance, self.conversation, image_url, text)
 
+
+def get_image(url, caption):
+    path = "app/assets/images/" + caption + ".jpg"
+    file = open(path, 'wb')
+    file.write(requests.get(url).content)
+    file.close()
+    return path
 
 
 def get_noticia(tipo):
