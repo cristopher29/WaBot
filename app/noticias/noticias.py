@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import requests, random
+import requests, random, re
 from app.bot import bot
 from bs4 import BeautifulSoup
 
@@ -20,7 +20,7 @@ class Noticias(object):
 
     def send_noticia_anime(self):
         text = u"*" + self.noticia['title'] + "*\n" + self.noticia['body'] + "\n" + self.noticia['link']
-        title_lower = self.noticia['title'].replace(" ", "_")
+        title_lower = re.sub('[\\\\/:+*?"`<>&!-.;#€~$%|]', '', self.noticia['title'].replace(" ", "_"))
         image_url = get_image(self.noticia['image_url'],title_lower)
         bot.send_image(self.instance, self.conversation, image_url, text)
 
