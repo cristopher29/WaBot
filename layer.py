@@ -42,6 +42,7 @@ class BotLayer(YowInterfaceLayer):
             Reacts to any notification received
         """
         self.toLower(notification.ack())
+        print notification
         if isinstance(notification, AddGroupsNotificationProtocolEntity):  # added new member
             who = notification.getParticipant()
             conver = notification.getFrom()
