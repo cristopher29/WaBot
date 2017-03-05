@@ -38,8 +38,8 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
                  "\n!noticia <anime,games,ciencia,series,música,actualidad> 📰" \
                  "\n!adv 😣" \
                  "\n!quote 📌" \
-                 "\n!siono 🤷" \
-                 "\n!ayuda".decode('utf-8')
+                 "\n!siono 🤔" \
+                 "\n!ayuda ❤".decode('utf-8')
 
         bot.send_message(instance, answer, conversation)
 
