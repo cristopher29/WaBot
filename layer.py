@@ -93,7 +93,7 @@ class BotLayer(YowInterfaceLayer):
 
         # Log
         # helper.log_mac(message_entity)
-
+        print message_entity
         who = helper.get_who_send(message_entity)
         conversation = message_entity.getFrom()
 
