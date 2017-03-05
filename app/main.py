@@ -11,6 +11,8 @@ from app.passwords import CLEVER_API_KEY
 from app.clever.clever import Cleverbot
 from app.quedada import quedada
 from app.youtube.youtube import Youtube
+from app.adv.adv import ADV
+from app.noticias.noticias import Noticias
 
 ####################################################################################################################
 
@@ -50,6 +52,19 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         if predicate:
             youtube = Youtube(instance, conversation, predicate)
             youtube.send_youtube()
+
+    elif command == "adv":
+        adv = ADV(instance, conversation)
+        adv.send_adv()
+
+    elif command == "noticia":
+
+        l = ['games', 'ciencia', 'series','música', 'actualidad']
+        if predicate:
+            if predicate in l:
+                noticia = Noticias(instance, conversation, predicate)
+                noticia.send_noticia()
+
 
     elif command == "quedada":
 
