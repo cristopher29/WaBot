@@ -63,8 +63,8 @@ def get_noticia(tipo):
             body = new.find('div',{'class': 'news-content'}).getText()
             link = new.find('span', {'class': 'showmytitle'})['title']
             out = {
-                'title': title,
-                'body': body,
+                'title': title.strip(),
+                'body': body.strip(),
                 'link': link
             }
             news_list.append(out)
