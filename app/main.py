@@ -35,7 +35,7 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
                  "\n!anime <búsqueda> 💮" \
                  "\n!anime season 💮" \
                  "\n!youtube <búsqueda> 🎥" \
-                 "\n!noticia <anime,games,ciencia,series,música,actualidad> 📰" \
+                 "\n!noticia <games,ciencia,series,música,actualidad> 📰" \
                  "\n!adv 😣" \
                  "\n!quote 📌" \
                  "\n!siono 🤔" \
