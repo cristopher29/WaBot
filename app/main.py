@@ -73,14 +73,16 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
 
     elif command == "noticia":
 
-        l = ['games', 'ciencia', 'series','música', 'actualidad','anime']
+        l = ['games', 'ciencia', 'series','música', 'actualidad']
         if predicate in l:
-            if predicate == 'anime':
-                noticia = Noticias(instance, conversation, predicate)
-                noticia.send_noticia_anime()
-            else:
-                noticia = Noticias(instance, conversation, predicate)
-                noticia.send_noticia()
+            noticia = Noticias(instance, conversation, predicate)
+            noticia.send_noticia()
+            # if predicate == 'anime':
+            #     noticia = Noticias(instance, conversation, predicate)
+            #     noticia.send_noticia_anime()
+            # else:
+            #     noticia = Noticias(instance, conversation, predicate)
+            #     noticia.send_noticia()
 
 
     elif command == "quedada":
