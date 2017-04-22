@@ -68,65 +68,6 @@ def get_noticia(tipo):
                 'link': link
             }
             news_list.append(out)
-    else:
-
-        url = 'http://misiontokyo.com/'
-        req = requests.get(url)
-        html = BeautifulSoup(req.text, "html.parser")
-        news = html.find('div',{'id':'Columna1'}).find_all('div',{'class':'bord_ext_news'})
-
-        for new in news:
-            title = new.find('a',{'class':'txt_home_news'})['title']
-            body = new.find('a',{'class':'txt_home_news'}).getText()
-            link = new.find('a',{'class':'txt_home_news'})['href']
-            image_url = new.find('img', attrs={'style': 'width:337px; height:190px; border:1px solid #000;'})['src']
-            out = {
-                'title': title.strip(),
-                'body': body.strip(),
-                'link': link,
-                'image_url': image_url
-            }
-
-
-            news_list.append(out)
-
-        url = 'http://ramenparados.com/category/noticias/anime/'
-        req = requests.get(url)
-        html = BeautifulSoup(req.text, "html.parser")
-        news = html.find('ul', {'class': 'widget-full1 left relative infinite-content'}).find_all('li')
-
-        for new in news:
-            title = new.find('div',{'class':'widget-full-list-text'}).find('a').getText()
-            body = new.find('div',{'class':'widget-full-list-text'}).find('p').getText()
-            link = new.find('div',{'class':'widget-full-list-text'}).find('a')['href']
-            image_url = new.find('img',{'class':'attachment-medium-thumb size-medium-thumb wp-post-image'})['data-lazy-src']
-            out = {
-                'title': title.strip(),
-                'body': body.strip(),
-                'link': link,
-                'image_url': image_url
-            }
-
-            news_list.append(out)
-
-        url = 'https://animanga.es'
-        req = requests.get(url)
-        html = BeautifulSoup(req.text, "html.parser")
-        news = html.find('div', {'class': 'n'}).find_all('article')
-
-        for new in news:
-            title = new.find('h3').find('a').getText()
-            body = new.find('p').getText()
-            link = new.find('figure').find('a')['href']
-            image_url = new.find('figure').find('img')['src']
-            out = {
-                'title': title.strip(),
-                'body': body.strip(),
-                'link': link,
-                'image_url': url+image_url
-            }
-
-            news_list.append(out)
-
+            
     #random.shuffle(news_list)
     return random.choice(news_list)
