@@ -68,6 +68,6 @@ def get_noticia(tipo):
                 'link': link
             }
             news_list.append(out)
-            
+
     #random.shuffle(news_list)
     return random.choice(news_list)

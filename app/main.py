@@ -77,12 +77,6 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         if predicate in l:
             noticia = Noticias(instance, conversation, predicate)
             noticia.send_noticia()
-            # if predicate == 'anime':
-            #     noticia = Noticias(instance, conversation, predicate)
-            #     noticia.send_noticia_anime()
-            # else:
-            #     noticia = Noticias(instance, conversation, predicate)
-            #     noticia.send_noticia()
 
 
     elif command == "quedada":
