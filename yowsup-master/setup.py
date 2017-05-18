@@ -5,7 +5,7 @@ import yowsup
 import platform
 import sys
 
-deps = ['python-dateutil', 'argparse', 'six']
+deps = ['python-dateutil', 'argparse', 'python-axolotl>=0.1.39', 'six']
 
 if sys.version_info < (2,7):
     deps += ['importlib']
@@ -28,7 +28,7 @@ setup(
     install_requires = deps,
     scripts = ['yowsup-cli'],
     #cmdclass={'test': PyTest},
-    author_email='tare2.galal@gmail.com',
+    author_email='danielcardeenas@gmail.com',
     description='A WhatsApp python library',
     #long_description=long_description,
     packages= find_packages(),
