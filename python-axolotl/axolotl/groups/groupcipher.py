@@ -11,7 +11,6 @@ from ..sessioncipher import AESCipher
 from ..groups.state.senderkeystore import SenderKeyStore
 if sys.version_info >= (3, 0):
     unicode = str
-    
 class GroupCipher:
     def __init__(self, senderKeyStore, senderKeyName):
         """
