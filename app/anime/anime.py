@@ -44,16 +44,17 @@ class Anime(object):
 
 
 def get_image(url, caption):
-    path = "app/assets/images/" + caption + ".jpg"
+
+    path = "app/assets/images/" + image + ".jpg"
     file = open(path, 'wb')
     file.write(requests.get(url).content)
     file.close()
     return path
 
 def clean_title(anime_title):
-    anime_lower = anime_title.lower().replace(" ", "_")
-    anime_lower = re.sub('[\\\\/:+*?"`<>&!-.;#~$%|]', '', anime_lower)
-    return anime_lower
+    regex = re.compile('[^a-zA-Z]')
+    title = regex.sub('_', anime_title)
+    return title
 
 
 def anime_search(title, genres=None):
