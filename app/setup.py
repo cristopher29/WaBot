@@ -8,7 +8,7 @@ import sys
 
 # Main dependences
 # Custom dependences
-deps = ['requests']
+deps = ['requests','xmltodict','beautifulsoup4']
 
 if sys.version_info < (2,7):
     deps += ['importlib']
