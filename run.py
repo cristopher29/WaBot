@@ -9,7 +9,7 @@ from yowsup.layers.network import YowNetworkLayer
 
 from layer import BotLayer
 
-from app.passwords import WHATS_NUMBER, WHATS_PASS
+from app.passwords import WHATS_NUMBER, WHATS_PASS, CONTACTS
 
 # Uncomment to log
 # logging.basicConfig(level=logging.DEBUG)
@@ -18,7 +18,7 @@ from app.passwords import WHATS_NUMBER, WHATS_PASS
 credentials = (WHATS_NUMBER, WHATS_PASS)
 encryption = True
 
-contacts_numbers = ["34695529542"]
+contacts_numbers = CONTACTS
 contacts = {
     "34695529542": "Cris",
 }
