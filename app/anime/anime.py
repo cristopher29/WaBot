@@ -44,8 +44,7 @@ class Anime(object):
 
 
 def get_image(url, caption):
-
-    path = "app/assets/images/" + image + ".jpg"
+    path = "app/assets/images/" + caption + ".jpg"
     file = open(path, 'wb')
     file.write(requests.get(url).content)
     file.close()
