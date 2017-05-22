@@ -77,15 +77,15 @@ class BotLayer(YowInterfaceLayer):
             # Handle intercepts if needed
             receiver.intercept(self, message_entity)
 
-            if message_entity.getFrom(False) in ap:
-                # If is a bot order. (Message starts with '!')
-                if bot.should_write(message_entity):
-                    # Prepare bot to answer (Human behavior)
-                    bot.prepate_answer(self, message_entity)
+            #if message_entity.getFrom(False) in ap:
+            # If is a bot order. (Message starts with '!')
+            if bot.should_write(message_entity):
+                # Prepare bot to answer (Human behavior)
+                bot.prepate_answer(self, message_entity)
 
-                    # Send the answer, here magic happens
-                    self.on_text_message(message_entity)
-                    #time.sleep(random.uniform(0.5, 1.5))
+                # Send the answer, here magic happens
+                self.on_text_message(message_entity)
+                #time.sleep(random.uniform(0.5, 1.5))
 
             # Finally Set offline
             bot.disconnect(self)
