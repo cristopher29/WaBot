@@ -16,7 +16,6 @@ def get_who_send(message_entity):
     
 def sender_name(message_entity):
     name = message_entity.getNotify()
-    name = name.decode('utf-8')
     return name
 
 
