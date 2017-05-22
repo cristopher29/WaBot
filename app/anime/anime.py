@@ -104,29 +104,31 @@ def anime_season():
     url = 'https://myanimelist.net/anime/season'
     req = requests.get(url)
     html = BeautifulSoup(req.text, "html.parser")
-    anime_s = []
 
     animes_temp = html.find('div', {
         'class': 'seasonal-anime-list js-seasonal-anime-list js-seasonal-anime-list-key-1 clearfix'}).find_all('div', {
         'class': 'seasonal-anime js-seasonal-anime'})
 
-    for anime in animes_temp:
-        titulo = anime.find('p', {'class': 'title-text'}).find('a').getText()
-        eps = anime.find('div', {'class': 'eps'}).find('span').getText()
-        image_temp = anime.find('div', {'class': 'image'}).find('img')['data-srcset']
-        image_url = re.search("(?P<url>https?://[^\s]+)", image_temp).group("url")
-        genres_temp = anime.find('div', {'class': 'genres-inner js-genre-inner'}).find_all('span', {'class': 'genre'})
+    anime  = random.choice(animes_temp)
 
-        genres = ''
-        for genre in genres_temp:
-            genres += genre.find('a').getText() + ", "
+    titulo = anime.find('p', {'class': 'title-text'}).find('a').getText()
+    eps = anime.find('div', {'class': 'eps'}).find('span').getText()
+    image_temp = anime.find('div', {'class': 'image'}).find('img')
 
-        dict = {
-            'title': titulo,
-            'genres': genres.strip()[:-1],
-            'eps': eps.replace('eps', ''),
-            'image_url': image_url
-        }
-        anime_s.append(dict)
-        
-    return random.choice(anime_s)
+    if image_temp.has_attr('src'):
+        image_temp = image_temp['src']
+    elif image_temp.has_attr('data-src'):
+        image_temp = image_temp['data-src']
+
+    image_url = re.search("(?P<url>https?://[^\s]+)", image_temp).group("url")
+    genres_temp = anime.find('div', {'class': 'genres-inner js-genre-inner'}).find_all('span', {'class': 'genre'})
+    genres = ''
+    for genre in genres_temp:
+        genres += genre.find('a').getText() + ", "
+
+    return {
+        'title': titulo,
+        'genres': genres.strip()[:-1],
+        'eps': eps.replace('eps', ''),
+        'image_url': image_url
+    }
