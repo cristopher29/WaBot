@@ -1,4 +1,4 @@
-import requests, random
+import random
 from app.bot import bot
 
 class YesNo(object):
