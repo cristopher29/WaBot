@@ -6,13 +6,14 @@ from app.bot import bot
 from app.utils import helper
 from app.yesno.yesno import YesNo
 from app.anime.anime import Anime
-from app.quote.quote import Quote
+from app.webs.quote.quote import Quote
 from app.passwords import CLEVER_API_KEY
 from app.clever.clever import Cleverbot
 from app.quedada import quedada
-from app.youtube.youtube import Youtube
-from app.adv.adv import ADV
-from app.noticias.noticias import Noticias
+from app.webs.youtube.youtube import Youtube
+from app.webs.adv.adv import ADV
+from app.webs.noticias.noticias import Noticias
+from app.webs.chiste.chiste import Chiste
 
 ####################################################################################################################
 
@@ -31,15 +32,16 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
     elif command == "ayuda":
 
         answer = "*Lista de comandos* " \
-                 "\n!hola 👋" \
-                 "\n!anime <búsqueda> 💮" \
-                 "\n!anime season 💮" \
-                 "\n!youtube <búsqueda> 🎥" \
-                 "\n!noticia <games,ciencia,series,música,actualidad> 📰" \
-                 "\n!adv 😣" \
-                 "\n!quote 📌" \
-                 "\n!siono 🤔" \
-                 "\n!ayuda ❤".decode('utf-8')
+                 "\n!hola" \
+                 "\n!anime <búsqueda>" \
+                 "\n!anime season" \
+                 "\n!youtube <búsqueda>" \
+                 "\n!noticia <games,ciencia,series,música,actualidad>" \
+                 "\n!adv " \
+                 "\n!frase" \
+                 "\n!chiste" \
+                 "\n!siono" \
+                 "\n!ayuda".decode('utf-8')
 
         bot.send_message(instance, answer, conversation)
 
@@ -58,9 +60,13 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
 
         anime.send_anime()
 
-    elif command == "quote":
+    elif command == "frase":
         quote = Quote(instance, conversation)
         quote.send_quote()
+
+    elif command == "chiste":
+        chiste = Chiste(instance, conversation)
+        chiste.send_chiste()
 
     elif command == "youtube":
         if predicate:
