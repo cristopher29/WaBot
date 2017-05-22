@@ -117,7 +117,7 @@ def decode_string(message):
 
 def send_image(self, number, path, caption=None):
     if os.path.isfile(path):
-        media_send(self, number, path, RequestUploadIqProtocolEntity.MEDIA_TYPE_IMAGE, caption.decode('utf-8','ignore').encode("utf-8"))
+        media_send(self, number, path, RequestUploadIqProtocolEntity.MEDIA_TYPE_IMAGE, caption.encode("utf-8"))
     else:
         print("Image doesn't exists")
 

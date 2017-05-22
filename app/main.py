@@ -21,7 +21,7 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
 
     if command == "hola":
         who_name = helper.sender_name(message_entity)
-        answer = "Hola *" + who_name + "*"
+        answer = "Hola *" + who_name + "*".encode('utf-8')
         bot.send_message(instance, answer, conversation)
 
     elif command == "newmember":
