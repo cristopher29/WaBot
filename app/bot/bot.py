@@ -3,7 +3,8 @@
 import os.path
 import logging
 import sys
-reload(sys)
+import importlib
+importlib.reload(sys)
 sys.setdefaultencoding("utf-8")
 import time
 import random
