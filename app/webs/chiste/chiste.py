@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import requests
 from bs4 import BeautifulSoup
 from app.bot import bot
@@ -17,4 +19,4 @@ class Chiste(object):
         self.chiste = html.find('td', {'bgcolor': '#FFFFFF'}).getText()
 
     def send_chiste(self):
-        bot.send_message(self.instance, "*" + self.chiste + "*", self.conversation)
+        bot.send_message(self.instance, u"" + self.chiste.strip().decode('utf-8') + "", self.conversation)
