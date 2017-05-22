@@ -69,7 +69,7 @@ class BotLayer(YowInterfaceLayer):
     @ProtocolEntityCallback("message")
     def on_message(self, message_entity):
         if helper.is_text_message(message_entity):
-            print (message_entity.getFrom(False) + " : " + message_entity.getBody())
+            print (message_entity.getFrom(False) + " : " + message_entity.getBody().encode('utf-8'))
 
             # Set received (double v) and add to ack queue
             bot.receive_message(self, message_entity)

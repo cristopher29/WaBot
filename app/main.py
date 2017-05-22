@@ -21,11 +21,11 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
 
     if command == "hola":
         who_name = helper.sender_name(message_entity)
-        answer = "Hola *" + who_name + "*".encode('utf-8')
+        answer = "Hola *" + who_name + "*".decode('utf-8')
         bot.send_message(instance, answer, conversation)
 
     elif command == "newmember":
-        answer = "🎊 *Bienvenido al grupo!* 🎊"
+        answer = "🎊 *Bienvenido al grupo!* 🎊".decode('utf-8')
         bot.send_message(instance, answer, conversation)
 
     elif command == "ayuda":
@@ -39,7 +39,7 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
                  "\n!adv 😣" \
                  "\n!quote 📌" \
                  "\n!siono 🤔" \
-                 "\n!ayuda ❤"
+                 "\n!ayuda ❤".decode('utf-8')
 
         bot.send_message(instance, answer, conversation)
 
@@ -102,4 +102,4 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
 def cleverbot_answer(message):
     cb = Cleverbot(CLEVER_API_KEY)
     answer = cb.ask(message)
-    return answer
+    return answer.decode('utf-8')
