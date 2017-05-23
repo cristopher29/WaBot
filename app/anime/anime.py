@@ -37,7 +37,7 @@ class Anime(object):
         if not self.anime:
             bot.send_message(self.instance,"*No he encontrado nada* :(" , self.conversation)
         else:
-            text = "*"+self.anime['title']+"* \n*Episodios*: " + self.anime['eps'] + "\n*Géneros*: ".decode('utf8') + self.anime['genres'] + ""
+            text = "*"+self.anime['title']+"* \n*Episodios*: " + self.anime['eps'] + "\n*Géneros*: " + self.anime['genres'] + ""
             bot.send_image(self.instance, self.conversation, self.anime['image_url'], text)
 
         
