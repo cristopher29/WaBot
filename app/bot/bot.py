@@ -170,8 +170,6 @@ def media_send(self, number, path, media_type, caption=None):
                                                                                     caption)
     fn_error = lambda error_entity, original_entity: on_request_upload_error(self, jid, path, error_entity, original_entity)
     self._sendIq(entity, fn_success, fn_error)
-
-    self._sendIq(entity, fn_success, fn_error)
 '''
 Callbacks. Do not touch
 '''

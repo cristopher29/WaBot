@@ -31,11 +31,12 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
 
     elif command == "ayuda":
 
+        # "\n!anime <búsqueda>" \
+        # "\n!anime season" \
+        # "\n!youtube <búsqueda>" \
+
         answer = "*Lista de comandos* " \
                  "\n!hola" \
-                 "\n!anime <búsqueda>" \
-                 "\n!anime season" \
-                 "\n!youtube <búsqueda>" \
                  "\n!noticia <games,ciencia,series,música,actualidad>" \
                  "\n!adv " \
                  "\n!frase" \
@@ -49,16 +50,16 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         yesno = YesNo(instance, conversation)
         yesno.send_yesno()
 
-    elif command == "anime":
-        if predicate:
-            if predicate == 'season':
-                anime = Anime(instance, conversation, param='season')
-            else:
-                anime = Anime(instance, conversation, param=predicate)
-        else:
-            anime = Anime(instance, conversation)
-
-        anime.send_anime()
+    # elif command == "anime":
+    #     if predicate:
+    #         if predicate == 'season':
+    #             anime = Anime(instance, conversation, param='season')
+    #         else:
+    #             anime = Anime(instance, conversation, param=predicate)
+    #     else:
+    #         anime = Anime(instance, conversation)
+    #
+    #     anime.send_anime()
 
     elif command == "frase":
         quote = Quote(instance, conversation)
@@ -68,10 +69,10 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         chiste = Chiste(instance, conversation)
         chiste.send_chiste()
 
-    elif command == "youtube":
-        if predicate:
-            youtube = Youtube(instance, conversation, predicate)
-            youtube.send_youtube()
+    # elif command == "youtube":
+    #     if predicate:
+    #         youtube = Youtube(instance, conversation, predicate)
+    #         youtube.send_youtube()
 
     elif command == "adv":
         adv = ADV(instance, conversation)
