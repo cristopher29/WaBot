@@ -3,8 +3,6 @@
 import os.path
 import logging
 import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
 import time
 import random
 import string
