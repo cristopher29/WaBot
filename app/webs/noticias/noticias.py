@@ -46,7 +46,7 @@ def get_noticia(tipo):
             url = 'https://www.meneame.net/m/videojuegos/queue'
         elif tipo == 'series':
             url = 'https://www.meneame.net/m/series/queue'
-        elif tipo == 'música':
+        elif tipo == 'música'.decode('utf8'):
             url = 'https://www.meneame.net/m/M%C3%BAsica/queue'
         elif tipo == 'actualidad':
             url = 'https://www.meneame.net/m/actualidad/queue'

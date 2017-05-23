@@ -37,7 +37,7 @@ class Anime(object):
         if not self.anime:
             bot.send_message(self.instance,"*No he encontrado nada* :(" , self.conversation)
         else:
-            text = u"*"+self.anime['title']+"* \n*Episodios*: " + self.anime['eps'] + "\n*Géneros*: " + self.anime['genres']
+            text = "*"+self.anime['title']+"* \n*Episodios*: " + self.anime['eps'] + "\n*Géneros*: " + self.anime['genres'] + ""
             bot.send_image(self.instance, self.conversation, self.anime['image_url'], text)
 
         
@@ -45,14 +45,13 @@ class Anime(object):
 
 def get_image(url, caption):
     path = "app/assets/images/" + caption + ".jpg"
-    file = open(path, 'wb')
-    file.write(requests.get(url).content)
-    file.close()
+    with open(path, 'wb') as file:
+        file.write(requests.get(url).content)
     return path
 
 def clean_title(anime_title):
     regex = re.compile('[^a-zA-Z]')
-    title = regex.sub('_', anime_title)
+    title = regex.sub('', anime_title)
     return title
 
 

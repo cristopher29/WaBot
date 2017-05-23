@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*- 
 import time
 import random
-
+import logging
 from app import main
 from app.utils import helper
 from app.bot import bot
@@ -13,8 +13,10 @@ from yowsup.layers.protocol_contacts.protocolentities import *
 from yowsup.layers.protocol_groups.protocolentities import *
 from yowsup.layers.protocol_groups.protocolentities.notification_groups_add import AddGroupsNotificationProtocolEntity
 
+
 allowedPersons=['34695529542-1487091202','34695529542-1417819580']
 ap = set(allowedPersons)
+logger = logging.getLogger(__name__)
 
 '''
 Basic flow. DO NOT TOUCH
@@ -25,8 +27,10 @@ Modifying this block automatically makes you a piece of shit
 class BotLayer(YowInterfaceLayer):
     PROP_CONTACTS = "org.openwhatsapp.yowsup.prop.syncdemo.contacts"
 
+
     def __init__(self):
         super(BotLayer, self).__init__()
+
 
     # Callback function when there is a successful connection to Whatsapp server
     @ProtocolEntityCallback("success")
@@ -69,7 +73,7 @@ class BotLayer(YowInterfaceLayer):
     @ProtocolEntityCallback("message")
     def on_message(self, message_entity):
         if helper.is_text_message(message_entity):
-            print (message_entity.getFrom(False) + " : " + message_entity.getBody().encode('utf-8'))
+            print (message_entity.getFrom(False) + " : " + message_entity.getBody().encode('utf8'))
 
             # Set received (double v) and add to ack queue
             bot.receive_message(self, message_entity)

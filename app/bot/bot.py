@@ -3,8 +3,6 @@
 import os.path
 import logging
 import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
 import time
 import random
 import string
@@ -13,6 +11,8 @@ from yowsup.layers.protocol_chatstate.protocolentities import *
 from yowsup.layers.protocol_media.protocolentities import *
 from yowsup.layers.protocol_media.mediauploader import MediaUploader
 from yowsup.common.tools import Jid
+from yowsup.layers.protocol_profiles.protocolentities import *
+from yowsup.common.optionalmodules import PILOptionalModule
 
 from app.utils import helper
 
@@ -20,6 +20,35 @@ name = "Bot"
 ack_queue = []
 logger = logging.getLogger(__name__)
 
+
+def profile_setStatus(self, text):
+    def onSuccess(resultIqEntity, originalIqEntity):
+        print("Status updated successfully")
+
+    def onError(errorIqEntity, originalIqEntity):
+        logger.error("Error updating status")
+
+    entity = SetStatusIqProtocolEntity(text)
+    self._sendIq(entity, onSuccess, onError)
+
+
+def profile_setPicture(self, path):
+    with PILOptionalModule(failMessage="No PIL library installed, try install pillow") as imp:
+        Image = imp("Image")
+
+        def onSuccess(resultIqEntity, originalIqEntity):
+            print("Profile picture updated successfully")
+
+        def onError(errorIqEntity, originalIqEntity):
+            logger.error("Error updating profile picture")
+
+        # example by @aesedepece in https://github.com/tgalal/yowsup/pull/781
+        # modified to support python3
+        src = Image.open(path)
+        pictureData = src.resize((640, 640)).tobytes("jpeg", "RGB")
+        picturePreview = src.resize((96, 96)).tobytes("jpeg", "RGB")
+        iq = SetPictureIqProtocolEntity(self.getOwnJid(), picturePreview, pictureData)
+        self._sendIq(iq, onSuccess, onError)
 
 def receive_message(self, message_entity):
     self.toLower(message_entity.ack(True))
@@ -119,7 +148,7 @@ def decode_string(message):
 
 def send_image(self, number, path, caption=None):
     if os.path.isfile(path):
-        media_send(self, number, path, RequestUploadIqProtocolEntity.MEDIA_TYPE_IMAGE, caption.decode('utf-8','ignore').encode("utf-8"))
+        media_send(self, number, path, RequestUploadIqProtocolEntity.MEDIA_TYPE_IMAGE, caption)
     else:
         print("Image doesn't exists")
 
@@ -140,7 +169,7 @@ def media_send(self, number, path, media_type, caption=None):
     fn_error = lambda error_entity, original_entity: on_request_upload_error(self, jid, path, error_entity, original_entity)
     self._sendIq(entity, fn_success, fn_error)
 
-
+    self._sendIq(entity, fn_success, fn_error)
 '''
 Callbacks. Do not touch
 '''
@@ -189,10 +218,10 @@ def do_send_media(self, media_type, file_path, url, to, ip=None, caption=None):
 
 
 def on_upload_error(self, filePath, jid):
+    print("Upload file %s to %s failed!" % (filePath, jid))
     logger.error("Upload file %s to %s failed!" % (filePath, jid))
 
 
 def on_upload_progress(self, filePath, jid, progress):
     sys.stdout.write("%s => %s, %d%% \r" % (os.path.basename(filePath), jid, progress))
     sys.stdout.flush()
-

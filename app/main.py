@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import string
+import string, requests, os
 from app.bot import bot
 from app.utils import helper
 from app.yesno.yesno import YesNo
@@ -22,11 +22,11 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
 
     if command == "hola":
         who_name = helper.sender_name(message_entity)
-        answer = "Hola *" + who_name + "*".decode('utf-8')
+        answer = "Hola *" + who_name + "*"
         bot.send_message(instance, answer, conversation)
 
     elif command == "newmember":
-        answer = "🎊 *Bienvenido al grupo!* 🎊".decode('utf-8')
+        answer = "🎊 *Bienvenido al grupo!* 🎊".decode('utf8')
         bot.send_message(instance, answer, conversation)
 
     elif command == "ayuda":
@@ -41,7 +41,7 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
                  "\n!frase" \
                  "\n!chiste" \
                  "\n!siono" \
-                 "\n!ayuda".decode('utf-8')
+                 "\n!ayuda".decode('utf8')
 
         bot.send_message(instance, answer, conversation)
 
@@ -79,7 +79,7 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
 
     elif command == "noticia":
 
-        l = ['games', 'ciencia', 'series','música', 'actualidad']
+        l = ['games', 'ciencia', 'series','música'.decode('utf8'), 'actualidad']
         if predicate in l:
             noticia = Noticias(instance, conversation, predicate)
             noticia.send_noticia()
@@ -99,13 +99,31 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
             bot.send_message(instance, "Establece un lugar", conversation)
             return
 
+    #cambia la foto del perfil
+    elif command == "fotoPerfil":
+        path = get_image()
+        bot.profile_setPicture(instance, path)
+
+    #cambia el estado del perfil
+    elif command == "estado":
+        if predicate:
+            bot.profile_setStatus(instance, predicate)
+
     else:
         #return
         answer = cleverbot_answer(command + " " + predicate)
         bot.send_message(instance, answer, conversation)
 
 
+def get_image():
+    path = "app/assets/images/avatar.jpg"
+    if os.path.exists(path):
+        os.remove(path)
+    with open(path, 'wb') as file:
+        file.write(requests.get('http://lorempixel.com/640/640/cats/').content)
+    return path
+
 def cleverbot_answer(message):
     cb = Cleverbot(CLEVER_API_KEY)
     answer = cb.ask(message)
-    return answer.decode('utf-8')
+    return answer
