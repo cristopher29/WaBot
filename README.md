@@ -1,6 +1,6 @@
 # WaBot
 
-Otaku WhatsApp Bot
+Simple WhatsApp Bot
 
 Python 2.7.x
 
