@@ -20,7 +20,7 @@ from axolotl.groups.senderkeyname import SenderKeyName
 from axolotl.groups.groupsessionbuilder import GroupSessionBuilder
 from axolotl.protocol.senderkeydistributionmessage import SenderKeyDistributionMessage
 
-import logging
+import logging, sys
 import copy
 logger = logging.getLogger(__name__)
 

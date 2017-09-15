@@ -50,53 +50,49 @@ def get_image(url, caption):
     return path
 
 def clean_title(anime_title):
-    regex = re.compile('[^a-zA-Z]')
-    title = regex.sub('', anime_title)
+    regex = re.compile('[^0-9a-zA-Z]')
+    title = regex.sub("%20", anime_title)
     return title
 
 
 def anime_search(title, genres=None):
 
     anime_lower = clean_title(title)
-    api = requests.get('https://myanimelist.net/api/anime/search.xml?q=' + anime_lower, auth=(MAL_USER, MAL_PASS))
+    url = 'https://myanimelist.net/search/all?q=' + anime_lower
 
-    if api.status_code == 200:
-        xml_dict = xmltodict.parse(api.content)
-        input_dict = OrderedDict(xml_dict)
-        output_dict = json.loads(json.dumps(input_dict))
-        anime = output_dict['anime']['entry']
+    req = requests.get(url)
+    html = BeautifulSoup(req.text, "html.parser")
+    result = html.findAll('a' , {'class': 'hoverinfo_trigger'})
 
-        if type(anime) is list:
-            anime = anime[0]
+    if result and 'https://myanimelist.net/anime/' in result[0]['href']:
+        req = requests.get(result[0]['href'])
+        html = BeautifulSoup(req.text, "html.parser")
 
-        anime['genres'] = ''
+        anime_title = html.find('h1',{'class': 'h1'}).find('span').getText()
 
-        if not genres:
+        sidebar = html.find('div',{'class':'js-scrollfix-bottom'})
 
-            url = 'https://myanimelist.net/anime/' + anime['id']
-            req = requests.get(url)
-            html = BeautifulSoup(req.text, "html.parser")
+        anime_image = sidebar.find('img')['src']
 
-            genres_tags = html.findAll('a', attrs={'href': re.compile('/anime/genre/*')})
-            genres_out = ''
-            for genre in genres_tags:
-                genres_out += genre.getText() + ", "
-            anime['genres'] = genres_out[:-2]
-        else:
-            anime['genres'] = genres
+        information = sidebar.find_all('div',{'class':'spaceit'})[0].getText()
+        anime_eps = information.replace('Episodes:','').strip()
+
+        genres_tags = html.findAll('a', attrs={'href': re.compile('/anime/genre/*')})
+        genres_out = ''
+        for genre in genres_tags:
+            genres_out += genre.getText() + ", "
+        anime_genres = genres_out[:-2]
 
 
         anime_dict = {
-            'title' : anime['title'],
-            'genres': anime['genres'],
-            'eps' : str(anime['episodes']),
-            'image_url' : get_image(anime['image'], anime_lower)
+            'title': anime_title,
+            'genres': anime_genres,
+            'eps': anime_eps,
+            'image_url': get_image(anime_image, anime_title.replace(' ', '_'))
         }
-
         return anime_dict
-
     else:
-        return False
+        return 'No hay nada'
 
 
 def anime_season():

@@ -36,38 +36,34 @@ def get_image(url, caption):
 def get_noticia(tipo):
 
     url = ''
+
+    if tipo == 'ciencia':
+        url = 'https://www.meneame.net/m/ciencia/queue'
+    elif tipo == 'videojuegos':
+        url = 'https://www.meneame.net/m/videojuegos/queue'
+    elif tipo == 'series':
+        url = 'https://www.meneame.net/m/series/queue'
+    elif tipo == 'música'.decode('utf8'):
+        url = 'https://www.meneame.net/m/M%C3%BAsica/queue'
+    elif tipo == 'actualidad':
+        url = 'https://www.meneame.net/m/actualidad/queue'
+
+    req = requests.get(url)
+    html = BeautifulSoup(req.text, "html.parser")
+
+    news = html.find('div',{'id': 'newswrap'}).find_all('div',{'class':'news-summary'})
+
     news_list = []
 
-    if tipo != 'anime':
+    for new in news:
+        title = new.find('h2').find('a').getText()
+        body = new.find('div',{'class': 'news-content'}).getText()
+        link = new.find('span', {'class': 'showmytitle'})['title']
+        out = {
+            'title': title.strip(),
+            'body': body.strip(),
+            'link': link
+        }
+        news_list.append(out)
 
-        if tipo == 'ciencia':
-            url = 'https://www.meneame.net/m/ciencia/queue'
-        elif tipo == 'games':
-            url = 'https://www.meneame.net/m/videojuegos/queue'
-        elif tipo == 'series':
-            url = 'https://www.meneame.net/m/series/queue'
-        elif tipo == 'música'.decode('utf8'):
-            url = 'https://www.meneame.net/m/M%C3%BAsica/queue'
-        elif tipo == 'actualidad':
-            url = 'https://www.meneame.net/m/actualidad/queue'
-
-        req = requests.get(url)
-        html = BeautifulSoup(req.text, "html.parser")
-
-        news = html.find('div',{'id': 'newswrap'}).find_all('div',{'class':'news-summary'})
-
-        news_list = []
-
-        for new in news:
-            title = new.find('h2').find('a').getText()
-            body = new.find('div',{'class': 'news-content'}).getText()
-            link = new.find('span', {'class': 'showmytitle'})['title']
-            out = {
-                'title': title.strip(),
-                'body': body.strip(),
-                'link': link
-            }
-            news_list.append(out)
-
-    #random.shuffle(news_list)
     return random.choice(news_list)

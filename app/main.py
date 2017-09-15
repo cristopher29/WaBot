@@ -37,7 +37,9 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
 
         answer = "*Lista de comandos* " \
                  "\n!hola" \
-                 "\n!noticia <games,ciencia,series,música,actualidad>" \
+                 "\n!noticia <videojuegos,ciencia,series,música,actualidad>" \
+                 "\n!anime season" \
+                 "\n!anime <búsqueda>" \
                  "\n!adv " \
                  "\n!frase" \
                  "\n!chiste" \
@@ -50,16 +52,16 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         yesno = YesNo(instance, conversation)
         yesno.send_yesno()
 
-    # elif command == "anime":
-    #     if predicate:
-    #         if predicate == 'season':
-    #             anime = Anime(instance, conversation, param='season')
-    #         else:
-    #             anime = Anime(instance, conversation, param=predicate)
-    #     else:
-    #         anime = Anime(instance, conversation)
-    #
-    #     anime.send_anime()
+    elif command == "anime":
+         if predicate:
+             if predicate == 'season':
+                 anime = Anime(instance, conversation, param='season')
+             else:
+                 anime = Anime(instance, conversation, param=predicate)
+         else:
+             anime = Anime(instance, conversation)
+
+         anime.send_anime()
 
     elif command == "frase":
         quote = Quote(instance, conversation)
@@ -80,7 +82,7 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
 
     elif command == "noticia":
 
-        l = ['games', 'ciencia', 'series','música'.decode('utf8'), 'actualidad']
+        l = ['videojuegos', 'ciencia', 'series','música'.decode('utf8'), 'actualidad']
         if predicate in l:
             noticia = Noticias(instance, conversation, predicate)
             noticia.send_noticia()

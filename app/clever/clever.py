@@ -28,5 +28,5 @@ class Cleverbot(object):
         url = self.SERVICE_URL + "&input=" + question + "&cs=" + self.cs
 
         r = requests.get(url).json()
-        return r['output'].decode('utf8')
+        return r['output']
 
