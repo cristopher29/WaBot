@@ -10,7 +10,6 @@ from app.quedada.voter import Voter
 
 class Quedada(Receiver):
     def __init__(self, instance, conversation, creator, title, identifier="👍"):
-        # Finish poll if user already has one in this conversation
         finish_quedada(instance, creator, conversation)
         Receiver.__init__(self, identifier, conversation, creator, self.handle_answer)
         self.instance = instance
@@ -22,7 +21,7 @@ class Quedada(Receiver):
             voter = Voter(message_entity)
             if not any(voter.who == v.who for v in self.voters):
                 self.voters.append(voter)
-            print("Got vote")
+            print("Voto guardado")
 
     def send_quedada(self):
         answer = "Próxima quedada: *" + self.title + "*" + "\n" + self.identifier + " para asistir"
@@ -54,20 +53,15 @@ def finish_quedada(self, creator, conversation):
 
 def quedada_from_user_conversation(creator, conversation):
     for quedada in receiver.receivers:
-        if is_quedada(quedada):
-            if quedada.is_creator(creator):
-                if quedada.is_conversation(conversation):
-                    return quedada
-
+        if is_quedada(quedada) and quedada.is_creator(creator) and quedada.is_conversation(conversation):
+            return quedada
     return None
 
 
 def user_has_quedada(creator, conversation):
     for quedada in receiver.receivers:
-        if quedada.is_creator(creator):
-            if quedada.is_conversation(conversation):
-                return True
-
+        if quedada.is_creator(creator) and quedada.is_conversation(conversation):
+            return True
     return False
 
 
