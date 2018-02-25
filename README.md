@@ -23,3 +23,9 @@ WHATS_NUMBER = '12384736283'
 WHATS_PASS =  'Xasdasxaxaxaxax='
 ```
 
+
+### Lista de comandos:
+
++ **`!hola`**: Saluda al usuario
+
+[Actualizando...]
