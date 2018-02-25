@@ -1,9 +1,25 @@
 # -*- coding: utf-8 -*-
 
 from yowsup.layers.protocol_messages.protocolentities import *
-import string
+import string, shutil, requests, re
+from yowsup.common.tools import Jid
 
 log_file = "botlog.txt"
+
+def get_image(url, caption):
+    regex = re.compile('[^0-9a-zA-Z]')
+    name = regex.sub("", caption)
+    path = "app/assets/images/" + name + ".jpg"
+    response = requests.get(url, stream=True)
+    with open(path, 'wb') as file:
+        shutil.copyfileobj(response.raw, file)
+    del response
+    return path
+
+def clean_text(anime_title):
+    regex = re.compile('[^0-9a-zA-ZÀ-ÿ]')
+    title = regex.sub("", anime_title)
+    return title.strip()
 
 def get_who_send(message_entity):
     who = message_entity.getFrom()
@@ -66,7 +82,7 @@ def is_vcard_media(message_entity):
 Builds a sendable whatsapp message (self.toLower(message))
 """
 def make_message(msg, conversation):
-    outgoing_message_enity = TextMessageProtocolEntity(msg, to=conversation)
+    outgoing_message_enity = TextMessageProtocolEntity(msg, to=Jid.normalize(conversation))
     return outgoing_message_enity
 
 

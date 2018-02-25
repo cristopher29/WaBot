@@ -1,7 +1,6 @@
 from yowsup.structs import ProtocolEntity, ProtocolTreeNode
 from .message_media_downloadable import DownloadableMediaMessageProtocolEntity
 from yowsup.common.tools import VideoTools
-from .builder_message_media_downloadable import DownloadableMediaMessageBuilder
 
 class VideoDownloadableMediaMessageProtocolEntity(DownloadableMediaMessageProtocolEntity):
     '''
@@ -74,16 +73,23 @@ class VideoDownloadableMediaMessageProtocolEntity(DownloadableMediaMessageProtoc
 
     def toProtocolTreeNode(self):
         node = super(VideoDownloadableMediaMessageProtocolEntity, self).toProtocolTreeNode()
-        mediaNode = node.getChild("media")
-
-        mediaNode.setAttribute("abitrate",  self.abitrate)
-        mediaNode.setAttribute("acodec",    self.acodec)
-        mediaNode.setAttribute("asampfmt",  self.asampfmt)
-        mediaNode.setAttribute("asampfreq", self.asampfreq)
-        mediaNode.setAttribute("duration",  self.duration)
-        mediaNode.setAttribute("encoding",  self.encoding)
+        mediaNode = node.getChild("enc")
+        if self.abitrate is not None:
+            mediaNode.setAttribute("abitrate",  self.abitrate)
+        if self.acodec is not None:
+            mediaNode.setAttribute("acodec",    self.acodec)
+        if self.asampfmt is not None:
+            mediaNode.setAttribute("asampfmt",  self.asampfmt)
+        if self.asampfreq is not None:
+            mediaNode.setAttribute("asampfreq", self.asampfreq)
+        if self.duration is not None:
+            mediaNode.setAttribute("duration",  self.duration)
+        if self.encoding is not None:
+            mediaNode.setAttribute("encoding",  self.encoding)
+            
         mediaNode.setAttribute("height",    str(self.height))
         mediaNode.setAttribute("width",     str(self.width))
+        
         if self.abitrate is not None:
         	mediaNode.setAttribute("abitrate",  str(self.abitrate))
         if self.acodec is not None:
@@ -129,26 +135,16 @@ class VideoDownloadableMediaMessageProtocolEntity(DownloadableMediaMessageProtoc
         )
         return entity
 
-    @staticmethod
-    def getBuilder(jid, filepath):
-        return DownloadableMediaMessageBuilder(VideoDownloadableMediaMessageProtocolEntity, jid, filepath)
- 
+    
     @staticmethod
     def fromFilePath(path, url, ip, to, mimeType = None, caption = None):
-        #preview = VideoTools.generatePreviewFromVideo(path)
-        #entity = DownloadableMediaMessageProtocolEntity.fromFilePath(path, url, DownloadableMediaMessageProtocolEntity.MEDIA_TYPE_VIDEO, ip, to, mimeType, preview)
-        #entity.__class__ = VideoDownloadableMediaMessageProtocolEntity
+        preview = VideoTools.generatePreviewFromVideo(path)
+        entity = DownloadableMediaMessageProtocolEntity.fromFilePath(path, url, DownloadableMediaMessageProtocolEntity.MEDIA_TYPE_VIDEO, ip, to, mimeType, preview)
+        entity.__class__ = VideoDownloadableMediaMessageProtocolEntity
 
-        #width, height, bitrate, duration = VideoTools.getVideoProperties(path)
-        #assert width, "Could not determine video properties"
+        width, height, bitrate, duration = VideoTools.getVideoProperties(path)
+        assert width, "Could not determine video properties"
 
-        #duration = int(duration)
-        #entity.setVideoProps('raw', width, height, duration=duration, seconds=duration, caption=caption)
-        #return entity
-        builder = VideoDownloadableMediaMessageProtocolEntity.getBuilder(to, path)
-        builder.set("url", url)
-        builder.set("ip", ip)
-        #builder.set("caption", caption)
-        builder.set("mimetype", mimeType)
-        #builder.set("dimensions", dimensions)
-        return VideoDownloadableMediaMessageProtocolEntity.fromBuilder(builder)
+        duration = int(duration)
+        entity.setVideoProps('raw', width, height, bitrate, duration=duration, seconds=duration, caption=caption)
+        return entity

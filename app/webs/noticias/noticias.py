@@ -34,18 +34,16 @@ def get_image(url, caption):
 
 
 def get_noticia(tipo):
-
     url = ''
-
-    if tipo == 'ciencia':
+    if tipo == "ciencia":
         url = 'https://www.meneame.net/m/ciencia/queue'
-    elif tipo == 'videojuegos':
+    elif tipo == "videojuegos":
         url = 'https://www.meneame.net/m/videojuegos/queue'
-    elif tipo == 'series':
+    elif tipo == "series":
         url = 'https://www.meneame.net/m/series/queue'
-    elif tipo == 'música'.decode('utf8'):
+    elif tipo == "música".decode('utf8'):
         url = 'https://www.meneame.net/m/M%C3%BAsica/queue'
-    elif tipo == 'actualidad':
+    elif tipo == "actualidad":
         url = 'https://www.meneame.net/m/actualidad/queue'
 
     req = requests.get(url)

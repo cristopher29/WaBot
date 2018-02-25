@@ -56,9 +56,7 @@ class ImageDownloadableMediaMessageProtocolEntity(DownloadableMediaMessageProtoc
 
     def toProtocolTreeNode(self):
         node = super(ImageDownloadableMediaMessageProtocolEntity, self).toProtocolTreeNode()
-        #mediaNode = node.getChild("media")
         mediaNode = node.getChild("enc")
-        print ("MIME:" + self.mimeType)
 
         mediaNode.setAttribute("encoding",  self.encoding)
         mediaNode.setAttribute("width",     str(self.width))

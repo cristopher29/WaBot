@@ -11,6 +11,12 @@ import hashlib
 import os.path, mimetypes
 from .optionalmodules import PILOptionalModule, FFVideoOptionalModule
 
+# Video
+import subprocess
+import shlex
+import json
+import math
+
 logger = logging.getLogger(__name__)
 
 class Jid:
@@ -46,7 +52,6 @@ class WATools:
             f.close()
         b64Hash = base64.b64encode(sha1.digest())
         return b64Hash if type(b64Hash) is str else b64Hash.decode()
-
     @staticmethod
     def getFileHashForUpload2(filePath):
         sha1 = hashlib.sha256()
@@ -56,7 +61,6 @@ class WATools:
         finally:
             f.close()
         return hash
-
 
 class StorageTools:
     @staticmethod
@@ -165,8 +169,8 @@ class MimeTools:
     mimetypes.init() # Load default mime.types
     try:
         mimetypes.init([MIME_FILE]) # Append whatsapp mime.types
-    except exception as e:
-        logger.warning("Mime types supported can't be read. System mimes will be used. Cause: " + e.message)
+    except Exception as e:
+        logger.warning("Unsupported MIME type. System mimes will be used. Cause: " + e.message)
 
     @staticmethod
     def getMIME(filepath):
@@ -178,18 +182,49 @@ class MimeTools:
 class VideoTools:
     @staticmethod
     def getVideoProperties(videoFile):
-        with FFVideoOptionalModule() as imp:
-            VideoStream = imp("VideoStream")
-            s = VideoStream(videoFile)
-            return s.width, s.height, s.bitrate, s.duration #, s.codec_name
+        if sys.version_info <= (3, 0): 
+            with FFVideoOptionalModule() as imp:
+                VideoStream = imp("VideoStream")
+                s = VideoStream(videoFile)
+                return s.width, s.height, s.bitrate, s.duration #, s.codec_name
+        else:
+            return VideoTools.video_meta_data(videoFile)
 
     @staticmethod
     def generatePreviewFromVideo(videoFile):
-        with FFVideoOptionalModule() as imp:
-            VideoStream = imp("VideoStream")
-            fd, path = tempfile.mkstemp('.jpg')
-            stream = VideoStream(videoFile)
-            stream.get_frame_at_sec(0).image().save(path)
+        if sys.version_info <= (3, 0):
+            with FFVideoOptionalModule() as imp:
+                VideoStream = imp("VideoStream")
+                fd, path = tempfile.mkstemp('.jpg')
+                stream = VideoStream(videoFile)
+                stream.get_frame_at_sec(0).image().save(path)
+                preview = ImageTools.generatePreviewFromImage(path)
+                os.remove(path)
+                return preview
+        else:
+            import moviepy.editor as mvpy
+            
+            clip = mvpy.VideoFileClip(videoFile)
+            path = tempfile.mkstemp('.jpg')[1]
+            clip.save_frame(path)
             preview = ImageTools.generatePreviewFromImage(path)
             os.remove(path)
             return preview
+
+    @staticmethod
+    def video_meta_data(path):
+        cmd = "ffprobe -v quiet -print_format json -show_streams"
+        args = shlex.split(cmd)
+        args.append(path)
+        
+        # run the ffprobe process, decode stdout into utf-8 & convert to JSON
+        ffprobeOutput = subprocess.check_output(args).decode('utf-8')
+        ffprobeOutput = json.loads(ffprobeOutput)
+    
+        height = ffprobeOutput['streams'][0]['height']
+        width = ffprobeOutput['streams'][0]['width']
+        bit_rate = ffprobeOutput['streams'][0]['bit_rate']
+        duration = ffprobeOutput['streams'][0]['duration']
+        
+        #print(height, width, br, duration)
+        return width, height, int(float(bit_rate)), int(math.ceil(float(duration)))

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: latin-1 -*-
 
 import sys
 from ..invalidkeyidexception import InvalidKeyIdException
@@ -58,13 +58,15 @@ class GroupCipher:
             if record.isEmpty():
                 raise NoSessionException("No sender key for: %s" % self.senderKeyName)
             senderKeyMessage = SenderKeyMessage(serialized = bytes(senderKeyMessageBytes))
+            
             senderKeyState = record.getSenderKeyState(senderKeyMessage.getKeyId())
-
+            
             senderKeyMessage.verifySignature(senderKeyState.getSigningKeyPublic())
-
+            
             senderKey = self.getSenderKey(senderKeyState, senderKeyMessage.getIteration())
-
+            
             plaintext = self.getPlainText(senderKey.getIv(), senderKey.getCipherKey(), senderKeyMessage.getCipherText())
+            
 
             self.senderKeyStore.storeSenderKey(self.senderKeyName, record)
 
@@ -102,7 +104,10 @@ class GroupCipher:
             cipher = AESCipher(key, iv)
             plaintext = cipher.decrypt(ciphertext)
             if sys.version_info >= (3, 0):
+                #return plaintext.decode('latin-1', errors='ignore')
                 return plaintext.decode()
+                
+            #return plaintext.decode('latin-1', errors='ignore')
             return plaintext
         except Exception as e:
             raise InvalidMessageException(e)

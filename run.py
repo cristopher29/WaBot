@@ -19,9 +19,6 @@ credentials = (WHATS_NUMBER, WHATS_PASS)
 encryption = True
 
 contacts_numbers = CONTACTS
-contacts = {
-    "34695529542": "Cris",
-}
 
 
 class BotStack(object):
@@ -40,9 +37,7 @@ class BotStack(object):
     def start(self):
         print("[Whatsapp] Bot started\n")
 
-        # Idk what is this
         self.stack.broadcastEvent(YowLayerEvent(YowNetworkLayer.EVENT_STATE_CONNECT))
-
         try:
             self.stack.loop(timeout=0.5, discrete=0.5)
         except AuthError as e:

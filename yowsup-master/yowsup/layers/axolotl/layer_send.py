@@ -9,7 +9,9 @@ from axolotl.axolotladdress import AxolotlAddress
 from axolotl.protocol.whispermessage import WhisperMessage
 from axolotl.groups.senderkeyname import SenderKeyName
 from axolotl.groups.groupsessionbuilder import GroupSessionBuilder
+from yowsup.common.tools                               import Jid
 import binascii
+
 import logging
 from random import randint
 
@@ -45,43 +47,57 @@ class AxolotlSendLayer(AxolotlBaseLayer):
     def handleEncNode(self, node):
         recipient_id = node["to"].split('@')[0]
         v2 = node["to"]
-
         if node.getChild("enc"):  # media enc is only for v2 messsages
-            messageData = self.serializeToProtobuf(node)
-            # print (messageData)
+            if '-' in recipient_id: ## Handle Groups
+                def getResultNodes(resultNode, requestEntity):
+                    groupInfo = InfoGroupsResultIqProtocolEntity.fromProtocolTreeNode(resultNode)
+                    jids = list(groupInfo.getParticipants().keys()) #keys in py3 returns dict_keys
+                    jids.remove(self.getLayerInterface(YowAuthenticationProtocolLayer).getUsername(True))
+                    jidsNoSession = []
+                    for jid in jids:
+                        if not self.store.containsSession(jid.split('@')[0], 1):
+                            jidsNoSession.append(jid)
+                    if len(jidsNoSession):
+                        self.getKeysFor(jidsNoSession, lambda successJids, b: self.sendToGroupWithSessions(node, successJids))
+                    else:
+                        self.sendToGroupWithSessions(node, jids)
 
-            if messageData:
-                sessionCipher = self.getSessionCipher(recipient_id)
-                messageData = messageData.SerializeToString() + self.getPadding()
-                ciphertext = sessionCipher.encrypt(messageData)
+                groupInfoIq = InfoGroupsIqProtocolEntity(Jid.normalize(node["to"]))
+                self._sendIq(groupInfoIq, getResultNodes)
+            else:
+                messageData = self.serializeToProtobuf(node)
+                if not self.store.containsSession(recipient_id, 1):
+                    self.getKeysFor([node["to"]], lambda successJids, b: self.sendToContact(node) if len(successJids) == 1 else self.toLower(node), lambda: self.toLower(node))
+                if messageData:
+                    sessionCipher = self.getSessionCipher(recipient_id)
+                    messageData = messageData.SerializeToString() + self.getPadding()
+                    ciphertext = sessionCipher.encrypt(messageData)
+                    mediaType = node.getChild("enc")["type"] if node.getChild("enc") else None
 
-                print ("masuk ENC")
-
-                mediaType = node.getChild("enc")["type"] if node.getChild("enc") else None
-                encEntity = EncryptedMessageProtocolEntity(
-                    [
-                        EncProtocolEntity(
-                        EncProtocolEntity.TYPE_MSG if ciphertext.__class__ == WhisperMessage else EncProtocolEntity.TYPE_PKMSG,
-                        2 if v2 else 1,
-                        ciphertext.serialize(), mediaType)],
-                    "text" if not mediaType else "media",
-                    _id = node["id"],
-                    to = node["to"],
-                    notify = node["notify"],
-                    timestamp = node["timestamp"],
-                    participant = node["participant"],
-                    offline = node["offline"],
-                    retry = node["retry"]
-                )
-                self.toLower(encEntity.toProtocolTreeNode())
-            else:  # case of unserializable messages (audio, video) ?
-                print ("kok masuk sini?")
-                self.toLower(node)
+                    encEntity = EncryptedMessageProtocolEntity(
+                        [
+                            EncProtocolEntity(
+                                EncProtocolEntity.TYPE_MSG if ciphertext.__class__ == WhisperMessage else EncProtocolEntity.TYPE_PKMSG,
+                                2 if v2 else 1,
+                                ciphertext.serialize(), mediaType)],
+                        "text" if not mediaType else "media",
+                        _id=node["id"],
+                        to=node["to"],
+                        notify=node["notify"],
+                        timestamp=node["timestamp"],
+                        participant=node["participant"],
+                        offline=node["offline"],
+                        retry=node["retry"]
+                    )
+                    self.toLower(encEntity.toProtocolTreeNode())
+                else:  # case of unserializable messages (audio, video) ?
+                    self.toLower(node)
         else:
             self.toLower(node)
 
     def send(self, node):
-        if node.tag == "message" and node["to"] not in self.skipEncJids and not node.getChild("enc") and (not node.getChild("media") or node.getChild("media")["mediakey"]):
+        # if node.tag == "message" and node["to"] not in self.skipEncJids and not node.getChild("enc") or (node.getChild("media") and node.getChild("media")["mediakey"]):
+        if node.tag == "message" and node["to"] not in self.skipEncJids and not node.getChild("enc"):
             self.processPlaintextNodeAndSend(node)
         # elif node.tag == "iq" and node["xmlns"] == "w:m":
         #     mediaNode = node.getChild("media")
@@ -95,7 +111,6 @@ class AxolotlSendLayer(AxolotlBaseLayer):
         #         ))
         #         self.toLower(iqNode)
         elif node.getChild("enc"):
-            print ("Masuk enc")
             self.handleEncNode(node)
         else:
             self.toLower(node)
@@ -127,9 +142,7 @@ class AxolotlSendLayer(AxolotlBaseLayer):
         recipient_id = node["to"].split('@')[0]
         isGroup = "-" in recipient_id
 
-        if node.getChild("media"):
-            self.toLower(node) # skip media enc for now, groups and non groups
-        elif isGroup:
+        if isGroup:
             self.sendToGroup(node, retryReceiptEntity)
         elif self.store.containsSession(recipient_id, 1):
             self.sendToContact(node)
@@ -269,8 +282,6 @@ class AxolotlSendLayer(AxolotlBaseLayer):
     def serializeToProtobuf(self, node, message = None):
         if node.getChild("body"):
             return self.serializeTextToProtobuf(node, message)
-        #elif node.getChild("media"):
-            #return self.serializeMediaToProtobuf(node.getChild("media"), message)
         elif node.getChild("enc"):
             return self.serializeMediaToProtobuf(node.getChild("enc"), message)
         else:
@@ -288,6 +299,8 @@ class AxolotlSendLayer(AxolotlBaseLayer):
             return self.serializeLocationToProtobuf(mediaNode, message)
         if mediaNode["type"] == "vcard":
             return self.serializeContactToProtobuf(mediaNode, message)
+        if mediaNode["type"] == "video":
+            return self.serializeVideoToProtobuf(mediaNode, message)
 
         return None
 
@@ -300,6 +313,7 @@ class AxolotlSendLayer(AxolotlBaseLayer):
         location_message.name = mediaNode["name"]
         location_message.url = mediaNode["url"]
 
+        location_message.jpeg_thumbnail = b''
         m.location_message.MergeFrom(location_message)
 
         return m
@@ -321,7 +335,7 @@ class AxolotlSendLayer(AxolotlBaseLayer):
         image_message.width = int(mediaNode["width"])
         image_message.height = int(mediaNode["height"])
         image_message.mime_type = mediaNode["mimetype"]
-        #image_message.file_sha256 = mediaNode["filehash"]
+        #image_message.media_key = mediaNode["mediakey"]
         image_message.file_sha256 = binascii.unhexlify(mediaNode["filehash"].encode())
         image_message.file_length = int(mediaNode["size"])
         image_message.media_key = binascii.unhexlify(mediaNode["anu"])
@@ -329,14 +343,27 @@ class AxolotlSendLayer(AxolotlBaseLayer):
         image_message.caption = mediaNode["caption"] or ""
         image_message.jpeg_thumbnail = mediaNode.getData()
 
-        print ("mimeType: " + mediaNode["mimetype"])
-
         m.image_message.MergeFrom(image_message)
 
         return m
-        # return
-        # return image_message
 
+    def serializeVideoToProtobuf(self,mediaNode, message = None):
+        m = message or Message()
+        video_message = VideoMessage()
+        video_message.url = mediaNode["url"]
+        #video_message.width = int(mediaNode["width"])
+        #video_message.height = int(mediaNode["height"])
+        video_message.mime_type = mediaNode["mimetype"]
+        video_message.file_sha256 = binascii.unhexlify(mediaNode["filehash"].encode())
+        video_message.file_length = int(mediaNode["size"])
+        video_message.media_key = binascii.unhexlify(mediaNode["anu"])
+        video_message.file_enc_sha256 = binascii.unhexlify(mediaNode["file_enc_sha256"])
+        video_message.caption = mediaNode["caption"] or ""
+        video_message.jpeg_thumbnail = mediaNode.getData()
+        video_message.duration = int(mediaNode["duration"])
+        m.video_message.MergeFrom(video_message)
+        
+        return m
     def serializeUrlToProtobuf(self, node, message = None):
         pass
 

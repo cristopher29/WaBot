@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os.path
-import logging
-import sys
-import time
-import random
-import string
+import os.path, logging, sys, time, random, string
 from yowsup.layers.protocol_presence.protocolentities import *
 from yowsup.layers.protocol_chatstate.protocolentities import *
 from yowsup.layers.protocol_media.protocolentities import *
@@ -32,7 +27,7 @@ def profile_setStatus(self, text):
     self._sendIq(entity, onSuccess, onError)
 
 
-def profile_setPicture(self, path):
+def profile_set_picture(self, path):
     with PILOptionalModule(failMessage="No PIL library installed, try install pillow") as imp:
         Image = imp("Image")
 
@@ -138,13 +133,11 @@ def send_message(self, message, conversation):
     self.toLower(helper.make_message(message, conversation))
 
 def decode_string(message):
-    try:
-        if type(message) is bytes:
-            message = message.decode(encoding='latin1', errors='ignore')
-        return message
-    except:
-        return message.decode('utf-8','ignore').encode("utf-8")
-
+    print("Formato texto enviado : " + str(type(message)))
+    if isinstance(message, str):
+        return message.decode('utf8').encode('utf8')
+    elif isinstance(message, unicode):
+        return message.encode('utf8')
 
 def send_image(self, number, path, caption=None):
     if os.path.isfile(path):

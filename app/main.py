@@ -9,42 +9,29 @@ from app.anime.anime import Anime
 from app.webs.quote.quote import Quote
 from app.passwords import CLEVER_API_KEY
 from app.clever.clever import Cleverbot
-from app.quedada import quedada
-from app.webs.youtube.youtube import Youtube
 from app.webs.adv.adv import ADV
 from app.webs.noticias.noticias import Noticias
 from app.webs.chiste.chiste import Chiste
-
-####################################################################################################################
+from app.webs.wur.wur import WUR
+from app.webs.chollo.chollo import Chollo
 
 
 def handle_message(instance, command, predicate, message_entity, who, conversation):
-
     if command == "hola":
         who_name = helper.sender_name(message_entity)
-        answer = "Hola *" + who_name + "*"
-        bot.send_message(instance, answer, conversation)
-
-    elif command == "newmember":
-        answer = "🎊 *Bienvenido al grupo!* 🎊".decode('utf8')
-        bot.send_message(instance, answer, conversation)
+        bot.send_message(instance, "Hola *"+ who_name +"*".decode('utf8'), conversation)
 
     elif command == "ayuda":
 
-        # "\n!anime <búsqueda>" \
-        # "\n!anime season" \
-        # "\n!youtube <búsqueda>" \
-
-        answer = "*Lista de comandos* " \
-                 "\n!hola" \
-                 "\n!noticia <videojuegos,ciencia,series,música,actualidad>" \
-                 "\n!anime season" \
-                 "\n!anime <búsqueda>" \
-                 "\n!adv " \
-                 "\n!frase" \
-                 "\n!chiste" \
-                 "\n!siono" \
-                 "\n!ayuda".decode('utf8')
+        answer = """*Lista de comandos*\n
+                 !hola\n
+                 !noticia <videojuegos,ciencia,series,música,actualidad>\n
+                 !chollo\n
+                 !anime <temp, temp lista, búsqueda>\n
+                 !adv\n
+                 !chiste\n
+                 !siono \n
+                 !ayuda"""
 
         bot.send_message(instance, answer, conversation)
 
@@ -53,59 +40,61 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         yesno.send_yesno()
 
     elif command == "anime":
-         if predicate:
-             if predicate == 'season':
-                 anime = Anime(instance, conversation, param='season')
-             else:
-                 anime = Anime(instance, conversation, param=predicate)
-         else:
-             anime = Anime(instance, conversation)
+        anime = None
+        person = helper.get_who_send(message_entity)
+        if predicate:
+            if predicate == "temp":
+                anime = Anime(instance, conversation, person, param='season')
+            elif predicate == "temp lista":
+                anime = Anime(instance, conversation, person, param='season_list')
+            elif predicate.isdigit():
+                anime = Anime(instance, conversation, person, param='anime_num', num=predicate)
+            else:
+                commands = predicate.split()
+                if len(commands)==2 and commands[0] == "temp" and commands[1].isdigit():
+                    anime = Anime(instance, conversation, person, param='season_num', num=commands[1])
+                # Buscar anime
+                else:
+                    anime = Anime(instance, conversation, person, param=predicate)
+        else:
+            #Anime aleatorio
+            anime = Anime(instance, conversation, person)
 
-         anime.send_anime()
+        if(anime):
+            anime.send_anime()
 
-    elif command == "frase":
-        quote = Quote(instance, conversation)
-        quote.send_quote()
+    elif command == "chollo":
+        chollo = Chollo(instance, conversation)
+        chollo.build()
+        chollo.send_chollo()
+
+    # elif command == "frase":
+    #     quote = Quote(instance, conversation)
+    #     quote.send_quote()
 
     elif command == "chiste":
         chiste = Chiste(instance, conversation)
         chiste.send_chiste()
 
-    # elif command == "youtube":
-    #     if predicate:
-    #         youtube = Youtube(instance, conversation, predicate)
-    #         youtube.send_youtube()
+    # elif command == "wur":
+    #     wur = WUR(instance, conversation)
+    #     wur.build()
+    #     wur.send_wur()
 
     elif command == "adv":
         adv = ADV(instance, conversation)
         adv.send_adv()
 
     elif command == "noticia":
-
-        l = ['videojuegos', 'ciencia', 'series','música'.decode('utf8'), 'actualidad']
-        if predicate in l:
+        l = ['videojuegos', 'ciencia', 'series','música', 'actualidad']
+        if predicate.encode('utf8') in l:
             noticia = Noticias(instance, conversation, predicate)
             noticia.send_noticia()
 
-
-    elif command == "quedada":
-
-        if predicate:
-            if predicate == "finalizar":
-                quedada.finish_quedada(instance, who, conversation)
-                return
-            else:
-                lugar = predicate
-                new_quedada = quedada.Quedada(instance, conversation, who, lugar)
-                new_quedada.send_quedada()
-        else:
-            bot.send_message(instance, "Establece un lugar", conversation)
-            return
-
     #cambia la foto del perfil
     elif command == "fotoPerfil":
-        path = get_image()
-        bot.profile_setPicture(instance, path)
+        path = get_avatar()
+        bot.profile_set_picture(instance, path)
 
     #cambia el estado del perfil
     elif command == "estado":
@@ -118,7 +107,7 @@ def handle_message(instance, command, predicate, message_entity, who, conversati
         bot.send_message(instance, answer, conversation)
 
 
-def get_image():
+def get_avatar():
     path = "app/assets/images/avatar.jpg"
     if os.path.exists(path):
         os.remove(path)

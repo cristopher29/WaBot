@@ -1,36 +1,34 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
-import time
-import random
+# -*- coding: utf-8 -*-
 import logging
 from app import main
 from app.utils import helper
 from app.bot import bot
 from app.receiver import receiver
-
+import schedule
+from threadex import Threading
 from yowsup.layers.interface import YowInterfaceLayer, ProtocolEntityCallback
 from yowsup.layers.protocol_contacts.protocolentities import *
 from yowsup.layers.protocol_groups.protocolentities import *
 from yowsup.layers.protocol_groups.protocolentities.notification_groups_add import AddGroupsNotificationProtocolEntity
+from yowsup.layers.protocol_messages.protocolentities import TextMessageProtocolEntity
+from yowsup.common.tools import Jid
+from app.anime.anime_notify import AnimeNotify
 
-
-allowedPersons=['34695529542-1487091202','34695529542-1417819580']
+allowedPersons=['34695529542-1487091202@g.us','34695529542-1417819580@g.us' , '34695529542@s.whatsapp.net']
 ap = set(allowedPersons)
 logger = logging.getLogger(__name__)
 
-'''
-Basic flow. DO NOT TOUCH
-Modifying this block automatically makes you a piece of shit
-####################################################################################################################
-####################################################################################################################
-'''
+
 class BotLayer(YowInterfaceLayer):
     PROP_CONTACTS = "org.openwhatsapp.yowsup.prop.syncdemo.contacts"
 
 
     def __init__(self):
         super(BotLayer, self).__init__()
-
+        #anime = AnimeNotify(self)
+        #schedule.every(15).minutes.do(anime.update_and_notify, "34695529542-1417819580@g.us")
+        #example = Threading()
 
     # Callback function when there is a successful connection to Whatsapp server
     @ProtocolEntityCallback("success")
@@ -40,6 +38,7 @@ class BotLayer(YowInterfaceLayer):
         contact_entity = GetSyncIqProtocolEntity(contacts)
         self._sendIq(contact_entity, self.on_sync_result, self.on_sync_error)
 
+
     @ProtocolEntityCallback("notification")
     def onNotification(self, notification):
         """
@@ -47,9 +46,10 @@ class BotLayer(YowInterfaceLayer):
         """
         self.toLower(notification.ack())
 
-        if isinstance(notification, AddGroupsNotificationProtocolEntity):  # added new member
-            conver = notification.getFrom()
-            main.handle_message(self, "newmember", "", notification , "", conver)
+        # if isinstance(notification, AddGroupsNotificationProtocolEntity):  # added new member
+        #     conver = notification.getFrom()
+        #     answer = "🎊 *Bienvenido al grupo!* 🎊"
+        #     bot.send_message(self,answer,conver)
 
     def on_sync_result(self,
                        result_sync_iq_entity,
@@ -73,7 +73,6 @@ class BotLayer(YowInterfaceLayer):
     @ProtocolEntityCallback("message")
     def on_message(self, message_entity):
         if helper.is_text_message(message_entity):
-            #print (message_entity.getFrom(False) + " : " + message_entity.getBody())
 
             # Set received (double v) and add to ack queue
             bot.receive_message(self, message_entity)
@@ -81,15 +80,15 @@ class BotLayer(YowInterfaceLayer):
             # Handle intercepts if needed
             receiver.intercept(self, message_entity)
 
-            #if message_entity.getFrom(False) in ap:
-            # If is a bot order. (Message starts with '!')
-            if bot.should_write(message_entity):
-                # Prepare bot to answer (Human behavior)
-                bot.prepate_answer(self, message_entity)
+            if message_entity.getFrom() in ap:
+                # If is a bot order. (Message starts with '!')
+                if bot.should_write(message_entity):
+                    # Prepare bot to answer (Human behavior)
+                    bot.prepate_answer(self, message_entity)
 
-                # Send the answer, here magic happens
-                self.on_text_message(message_entity)
-                #time.sleep(random.uniform(0.5, 1.5))
+                    # Send the answer, here magic happens
+                    self.on_text_message(message_entity)
+                    #time.sleep(random.uniform(0.5, 1.5))
 
             # Finally Set offline
             bot.disconnect(self)
@@ -98,12 +97,12 @@ class BotLayer(YowInterfaceLayer):
         # Detect command and the predicate of the message
         command = ""
         predicate = ""
-
+        print("----------------------------------------------")
         try:
             command = helper.predicate(message_entity).split(' ', 1)[0]
             predicate = helper.predicate(message_entity).split(' ', 1)[1]
         except IndexError:
-            print("No predicate")
+            print "Comando sin segundo parametro"
         # Log
         # helper.log_mac(message_entity)
         who = helper.get_who_send(message_entity)
@@ -112,9 +111,4 @@ class BotLayer(YowInterfaceLayer):
         if helper.is_command(message_entity):
             main.handle_message(self, command, predicate, message_entity, who, conversation)
 
-'''
-Just ignore everything above (this block)
-Modifying this block automatically makes you a piece of shit
-####################################################################################################################
-####################################################################################################################
-'''
+
